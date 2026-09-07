@@ -12,6 +12,8 @@ export function TitleBar({ onSave }) {
   const openDialog = useUIStore((s) => s.openDialog);
   const autoSaveEnabled = useUIStore((s) => s.autoSaveEnabled);
   const toggleAutoSave = useUIStore((s) => s.toggleAutoSave);
+  const copilotOpen = useUIStore((s) => s.copilotOpen);
+  const toggleCopilot = useUIStore((s) => s.toggleCopilot);
   const title = useDocumentStore((s) => s.title);
   const setTitle = useDocumentStore((s) => s.setTitle);
   const resetDocument = useDocumentStore((s) => s.reset);
@@ -196,6 +198,26 @@ export function TitleBar({ onSave }) {
             </span>
           ) : null}
         </div>
+        <button
+          type="button"
+          onClick={toggleCopilot}
+          title="Toggle Pragna AI Copilot sidebar (Claude & ChatGPT inside Word)"
+          style={{
+            ...outlineBtn,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            background: copilotOpen ? 'rgba(212,175,55,0.18)' : 'transparent',
+            borderColor: copilotOpen ? 'var(--gold)' : 'var(--border)',
+            color: 'var(--gold)',
+            fontWeight: 600,
+          }}
+          onMouseEnter={onGoldHover}
+          onMouseLeave={onGoldLeave}
+        >
+          <span style={{ fontSize: 13 }}>✦</span>
+          <span>Copilot</span>
+        </button>
         <button type="button" onClick={() => openDialog('comments')} style={outlineBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>Comments</button>
         <button
           type="button"

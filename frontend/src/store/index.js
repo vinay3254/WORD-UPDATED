@@ -262,6 +262,9 @@ export const useUIStore = create((set) => ({
   drawOpacity: 0.4,
   watermarkText: '',
 
+  copilotOpen: true,
+  toggleCopilot: () => set((s) => ({ copilotOpen: !s.copilotOpen })),
+  setCopilotOpen: (open) => set({ copilotOpen: !!open }),
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
   toggleFullscreen: () => set((s) => ({ fullscreen: !s.fullscreen })),
   toggleRibbon: () => set((s) => ({ ribbonCollapsed: !s.ribbonCollapsed })),
