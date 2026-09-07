@@ -311,7 +311,7 @@ export const useUIStore = create((set) => ({
   pragnaInitialPrompt: '',
   openPragna: (initialTab = 'ask', initialPrompt = '') =>
     set((s) => ({
-      dialogs: { ...s.dialogs, pragnaAi: true },
+      copilotOpen: true,
       pragnaInitialTab: initialTab,
       pragnaInitialPrompt: initialPrompt,
     })),

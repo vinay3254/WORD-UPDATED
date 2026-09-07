@@ -4,25 +4,19 @@ import { markdownToHtml } from '@/services/ai';
 import { aiApi } from '@/services/api';
 
 const QUICK_PROMPTS = [
-  { label: '⚡ Summary', prompt: 'Provide a concise, punchy executive summary of the attached document/selection with key takeaways.' },
+  { label: '⚡ Summary', prompt: 'Provide a concise, punchy executive summary of the attached text with key takeaways.' },
   { label: '👔 Professional', prompt: 'Rewrite the attached text in an authoritative, executive, and highly polished corporate tone.' },
-  { label: '✓ Polish & Flow', prompt: 'Proofread and correct all grammar, punctuation, and phrasing issues while improving sentence flow.' },
-  { label: '📊 Table', prompt: 'Analyze the information in the attached text and structure it into a clean, markdown data table.' },
-  { label: '📝 Action Items', prompt: 'Extract all actionable tasks and obligations into a structured checklist.' },
+  { label: '✓ Fix Grammar', prompt: 'Proofread and correct all grammar, punctuation, and phrasing issues while improving sentence flow.' },
+  { label: '📊 Table', prompt: 'Structure the key points and data from the attached text into a clean markdown table.' },
+  { label: '📝 Action Items', prompt: 'Extract all actionable tasks and next steps into a structured checklist.' },
   { label: '🎯 Simplify', prompt: 'Simplify the language, eliminate unnecessary jargon, and make the content effortless to read.' },
-  { label: '💡 Brainstorm', prompt: 'Brainstorm creative directions, missing sections, and compelling angles to enhance this document.' },
-];
-
-const AVAILABLE_MODELS = [
-  { id: 'gemma4:31b', name: 'Gemma 4 31B Cloud' },
-  { id: 'gpt-oss:120b', name: 'GPT-OSS 120B Cloud' },
-  { id: 'nemotron-3-nano:30b', name: 'Nemotron 30B' },
+  { label: '💡 Brainstorm', prompt: 'Brainstorm creative angles and missing sections to improve this document.' },
 ];
 
 export function PragnaChatSidebar() {
-  const { copilotOpen, toggleCopilot, toast } = useUIStore();
+  const { copilotOpen, toggleCopilot, pragnaInitialTab, pragnaInitialPrompt, toast } = useUIStore();
   const { editor } = useEditorStore();
-  const { title: docTitle, setTitle } = useDocumentStore();
+  const { title: docTitle } = useDocumentStore();
 
   const [messages, setMessages] = useState([
     {
@@ -44,12 +38,12 @@ Ask me anything or pick a quick prompt below!`,
 
   const [inputPrompt, setInputPrompt] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('gemma4:31b');
-  const [includeContext, setIncludeContext] = useState(true);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [selectedText, setSelectedText] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
+  const [scope, setScope] = useState('document'); // 'selection' | 'cursor' | 'document'
 
+  const savedRangeRef = useRef({ from: 0, to: 0, text: '' });
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -57,24 +51,26 @@ Ask me anything or pick a quick prompt below!`,
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Sync editor selection dynamically
+  // Sync editor selection & range dynamically
   useEffect(() => {
     if (!editor) return;
 
     const updateContext = () => {
       try {
         const { from, to } = editor.state.selection;
-        const sel = from !== to
-          ? editor.state.doc.textBetween(from, to, ' ').trim()
-          : '';
         const fullDoc = editor.state.doc.textBetween(0, editor.state.doc.content.size, ' ').trim();
 
-        if (sel) {
+        if (from !== to) {
+          const sel = editor.state.doc.textBetween(from, to, ' ').trim();
           setSelectedText(sel);
           setHasSelection(true);
+          setScope('selection');
+          savedRangeRef.current = { from, to, text: sel };
         } else {
           setSelectedText(fullDoc);
           setHasSelection(false);
+          setScope(fullDoc ? 'document' : 'cursor');
+          savedRangeRef.current = { from, to, text: '' };
         }
       } catch {
         // ignore
@@ -90,6 +86,31 @@ Ask me anything or pick a quick prompt below!`,
       editor.off('update', updateContext);
     };
   }, [editor]);
+
+  // Handle opening with initial prompt
+  useEffect(() => {
+    if (copilotOpen) {
+      if (pragnaInitialPrompt) {
+        setInputPrompt(pragnaInitialPrompt);
+      } else if (pragnaInitialTab && pragnaInitialTab !== 'ask') {
+        const map = {
+          grammar: 'Proofread and correct all grammar and style issues in the attached text.',
+          summarize: 'Summarize the attached text with concise bullet points.',
+          generate: 'Draft a comprehensive, well-structured section for this document.',
+          rewrite: 'Rewrite the attached text in a polished, professional tone.',
+          title: 'Generate 5 compelling titles for this document.',
+          edit: 'Improve the clarity, impact, and structure of the attached text.',
+        };
+        if (map[pragnaInitialTab]) {
+          setInputPrompt(map[pragnaInitialTab]);
+        }
+      }
+      setTimeout(() => {
+        textareaRef.current?.focus();
+        scrollToBottom();
+      }, 100);
+    }
+  }, [copilotOpen, pragnaInitialTab, pragnaInitialPrompt]);
 
   useEffect(() => {
     if (copilotOpen) {
@@ -122,15 +143,15 @@ Ask me anything or pick a quick prompt below!`,
           content: m.content,
         }));
 
-      const contextPayload = includeContext && selectedText
-        ? selectedText.slice(0, 4000)
-        : '';
+      const fullDoc = editor ? editor.state.doc.textBetween(0, editor.state.doc.content.size, ' ').trim() : '';
+      const currentScope = hasSelection ? 'selection' : (fullDoc ? 'document' : 'cursor');
 
       const response = await aiApi.chat({
         messages: apiMessages,
-        context: contextPayload,
+        selectedText: hasSelection ? selectedText : '',
+        documentText: fullDoc,
+        scope: currentScope,
         webSearch: webSearchEnabled,
-        model: selectedModel,
       });
 
       if (response && response.success) {
@@ -139,9 +160,9 @@ Ask me anything or pick a quick prompt below!`,
           role: 'assistant',
           content: response.message,
           html: markdownToHtml(response.message),
-          model: response.model || selectedModel,
-          latencyMs: response.latencyMs,
           sources: response.sources || [],
+          targetRange: { ...savedRangeRef.current },
+          targetScope: currentScope,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, assistantMsg]);
@@ -149,7 +170,7 @@ Ask me anything or pick a quick prompt below!`,
         throw new Error(response?.message || 'Pragna did not return a valid response');
       }
     } catch (err) {
-      console.error('Pragna Sidebar Chat Error:', err);
+      console.error('Pragna Chat Error:', err);
       toast('Chat error: ' + err.message, 'error');
       setMessages((prev) => [
         ...prev,
@@ -174,28 +195,54 @@ Ask me anything or pick a quick prompt below!`,
     }
   };
 
-  const handleInsertAtCursor = (msg) => {
-    if (!editor) return;
-    const htmlToInsert = msg.html || markdownToHtml(msg.content);
-    editor.chain().focus().insertContent(htmlToInsert).run();
-    toast('Inserted into document at cursor', 'success');
+  // Replace the saved selection range or document
+  const handleReplaceInDoc = (msg) => {
+    if (!editor) {
+      toast('Editor is not ready', 'info');
+      return;
+    }
+
+    const htmlContent = msg.html || markdownToHtml(msg.content);
+    const range = msg.targetRange || savedRangeRef.current;
+
+    try {
+      if (range && range.from !== range.to) {
+        // Replace exact selection range
+        editor
+          .chain()
+          .focus()
+          .deleteRange({ from: range.from, to: range.to })
+          .insertContentAt(range.from, htmlContent)
+          .run();
+        toast('✓ Replaced selection in document', 'success');
+      } else {
+        // Current cursor or selection
+        const { from, to } = editor.state.selection;
+        if (from !== to) {
+          editor.chain().focus().deleteRange({ from, to }).insertContentAt(from, htmlContent).run();
+        } else {
+          editor.chain().focus().insertContent(htmlContent).run();
+        }
+        toast('✓ Applied to document', 'success');
+      }
+    } catch (err) {
+      console.error('Edit execution error:', err);
+      // Fallback
+      editor.chain().focus().insertContent(htmlContent).run();
+      toast('✓ Inserted into document', 'success');
+    }
   };
 
-  const handleReplaceSelection = (msg) => {
+  const handleInsertAtCursor = (msg) => {
     if (!editor) return;
-    const { from, to } = editor.state.selection;
-    const htmlToInsert = msg.html || markdownToHtml(msg.content);
-    if (from !== to) {
-      editor.chain().focus().insertContentAt({ from, to }, htmlToInsert).run();
-    } else {
-      editor.chain().focus().insertContent(htmlToInsert).run();
-    }
-    toast('Replaced selection in document', 'success');
+    const htmlContent = msg.html || markdownToHtml(msg.content);
+    editor.chain().focus().insertContent(htmlContent).run();
+    toast('✓ Inserted at cursor', 'success');
   };
 
   const handleCopyText = (content) => {
     navigator.clipboard?.writeText(content);
-    toast('Copied response to clipboard', 'info');
+    toast('Copied to clipboard', 'info');
   };
 
   const handleClearChat = () => {
@@ -203,7 +250,7 @@ Ask me anything or pick a quick prompt below!`,
       {
         id: 'welcome',
         role: 'assistant',
-        content: `Chat cleared. Ready to help you with **${docTitle || 'your document'}**!`,
+        content: `Chat cleared. How can I assist with your document?`,
         html: '',
         timestamp: new Date(),
       },
@@ -217,7 +264,7 @@ Ask me anything or pick a quick prompt below!`,
     return (
       <button
         onClick={toggleCopilot}
-        title="Open Pragna AI Copilot (Claude & ChatGPT inside Word)"
+        title="Open Pragna"
         style={{
           position: 'fixed',
           right: 0,
@@ -248,8 +295,8 @@ Ask me anything or pick a quick prompt below!`,
         }}
       >
         <span style={{ fontSize: 16 }}>✦</span>
-        <span style={{ writingMode: 'vertical-rl', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em' }}>
-          COPILOT
+        <span style={{ writingMode: 'vertical-rl', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em' }}>
+          PRAGNA
         </span>
       </button>
     );
@@ -277,60 +324,39 @@ Ask me anything or pick a quick prompt below!`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '8px 12px',
+          padding: '10px 14px',
           borderBottom: '1px solid var(--border)',
           background: 'var(--bg-surface)',
           gap: 6,
         }}
       >
-        {/* Brand & Model */}
+        {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 15, color: 'var(--gold)' }}>✦</span>
-          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
-            Pragna Copilot
+          <span style={{ fontSize: 16, color: 'var(--gold)' }}>✦</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
+            Pragna
           </span>
-
-          <select
-            value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
-            style={{
-              background: 'var(--bg-elevated)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border)',
-              borderRadius: 4,
-              padding: '2px 6px',
-              fontSize: 10,
-              outline: 'none',
-              cursor: 'pointer',
-              maxWidth: 130,
-            }}
-          >
-            {AVAILABLE_MODELS.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-          </select>
         </div>
 
         {/* Actions (Web, Clear, Close) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {/* Web Toggle */}
           <button
             onClick={() => setWebSearchEnabled(!webSearchEnabled)}
-            title={`Web Grounding: ${webSearchEnabled ? 'ON' : 'OFF'}`}
+            title={`Live Web Search: ${webSearchEnabled ? 'ON' : 'OFF'}`}
             style={{
               background: webSearchEnabled ? 'var(--gold)' : 'var(--bg-elevated)',
               color: webSearchEnabled ? 'var(--text-on-gold)' : 'var(--text-secondary)',
               border: `1px solid ${webSearchEnabled ? 'var(--gold)' : 'var(--border)'}`,
               borderRadius: 4,
-              padding: '3px 6px',
+              padding: '3px 7px',
               fontSize: 10,
               fontWeight: 600,
               cursor: 'pointer',
+              transition: 'all 0.12s ease',
             }}
           >
-            🌐 {webSearchEnabled ? 'ON' : 'OFF'}
+            🌐 Web: {webSearchEnabled ? 'ON' : 'OFF'}
           </button>
 
           {/* Clear */}
@@ -352,7 +378,7 @@ Ask me anything or pick a quick prompt below!`,
           {/* Close Sidebar */}
           <button
             onClick={toggleCopilot}
-            title="Close Copilot Panel"
+            title="Close Pragna Panel"
             style={{
               background: 'transparent',
               color: 'var(--text-muted)',
@@ -367,35 +393,29 @@ Ask me anything or pick a quick prompt below!`,
         </div>
       </div>
 
-      {/* Context Bar */}
+      {/* Context Badge */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '5px 12px',
+          padding: '6px 14px',
           background: 'var(--bg-elevated)',
           borderBottom: '1px solid var(--border)',
-          fontSize: 10,
+          fontSize: 11,
           color: 'var(--text-muted)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <span style={{ color: 'var(--gold)' }}>📎</span>
           <span>
-            {hasSelection ? `Selection (${wordCount}w)` : `Entire Doc (${wordCount}w)`}
+            {hasSelection ? `Selection (${wordCount} words)` : `Document (${wordCount} words)`}
           </span>
         </div>
 
-        <label style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', flexShrink: 0 }}>
-          <input
-            type="checkbox"
-            checked={includeContext}
-            onChange={(e) => setIncludeContext(e.target.checked)}
-            style={{ cursor: 'pointer' }}
-          />
-          <span>Context</span>
-        </label>
+        <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>
+          {scope === 'selection' ? 'Target: Selection' : 'Target: Document'}
+        </span>
       </div>
 
       {/* Messages Feed */}
@@ -435,7 +455,6 @@ Ask me anything or pick a quick prompt below!`,
                 <span style={{ fontWeight: 600, color: isUser ? 'var(--gold)' : 'var(--text-primary)' }}>
                   {isUser ? 'You' : '✦ Pragna'}
                 </span>
-                {msg.latencyMs && <span>• {(msg.latencyMs / 1000).toFixed(1)}s</span>}
               </div>
 
               {/* Message Bubble */}
@@ -491,40 +510,43 @@ Ask me anything or pick a quick prompt below!`,
                 )}
               </div>
 
-              {/* Response Action Buttons */}
+              {/* Action Buttons for Assistant Message */}
               {!isUser && msg.id !== 'welcome' && !msg.isError && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4, paddingLeft: 2 }}>
+                  <button
+                    onClick={() => handleReplaceInDoc(msg)}
+                    title="Replace target in document"
+                    style={{
+                      background: 'var(--gold)',
+                      color: 'var(--text-on-gold)',
+                      border: '1px solid var(--gold-border)',
+                      borderRadius: 3,
+                      padding: '3px 8px',
+                      fontSize: 10,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 3,
+                    }}
+                  >
+                    <span>⚡ Replace in Document</span>
+                  </button>
+
                   <button
                     onClick={() => handleInsertAtCursor(msg)}
                     title="Insert directly into document at cursor"
                     style={{
                       background: 'var(--bg-elevated)',
-                      color: 'var(--gold)',
-                      border: '1px solid var(--gold-border)',
-                      borderRadius: 3,
-                      padding: '2px 6px',
-                      fontSize: 10,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    📥 Insert
-                  </button>
-
-                  <button
-                    onClick={() => handleReplaceSelection(msg)}
-                    title="Replace current selection"
-                    style={{
-                      background: 'var(--bg-elevated)',
                       color: 'var(--text-secondary)',
                       border: '1px solid var(--border)',
                       borderRadius: 3,
-                      padding: '2px 6px',
+                      padding: '3px 6px',
                       fontSize: 10,
                       cursor: 'pointer',
                     }}
                   >
-                    🔄 Replace
+                    <span>📥 Insert</span>
                   </button>
 
                   <button
@@ -535,7 +557,7 @@ Ask me anything or pick a quick prompt below!`,
                       color: 'var(--text-muted)',
                       border: '1px solid var(--border)',
                       borderRadius: 3,
-                      padding: '2px 5px',
+                      padding: '3px 5px',
                       fontSize: 10,
                       cursor: 'pointer',
                     }}
@@ -551,7 +573,7 @@ Ask me anything or pick a quick prompt below!`,
         {loading && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', color: 'var(--gold)', fontSize: 11, fontStyle: 'italic' }}>
             <span>✦</span>
-            <span>Pragna is generating...</span>
+            <span>Pragna is writing...</span>
           </div>
         )}
 

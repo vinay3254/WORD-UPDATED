@@ -543,8 +543,7 @@ export function HomeTab() {
                 <path d="M12 2L14.6 8.4L21 11L14.6 13.6L12 20L9.4 13.6L3 11L9.4 8.4L12 2Z" fill="url(#pragnaGoldGrad)" />
                 <path d="M19 14L20.2 16.8L23 18L20.2 19.2L19 22L17.8 19.2L15 18L17.8 16.8L19 14Z" fill="url(#pragnaGoldGrad)" />
               </svg>
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.2px', lineHeight: 1.1 }}>Pragna</span>
-              <span style={{ fontSize: 9, color: 'var(--text-secondary)', lineHeight: 1, fontWeight: 500 }}>Gemma 31B</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.2px', lineHeight: 1.1 }}>Pragna</span>
             </button>
           </Tooltip>
 

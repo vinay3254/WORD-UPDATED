@@ -198,26 +198,6 @@ export function TitleBar({ onSave }) {
             </span>
           ) : null}
         </div>
-        <button
-          type="button"
-          onClick={toggleCopilot}
-          title="Toggle Pragna AI Copilot sidebar (Claude & ChatGPT inside Word)"
-          style={{
-            ...outlineBtn,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            background: copilotOpen ? 'rgba(212,175,55,0.18)' : 'transparent',
-            borderColor: copilotOpen ? 'var(--gold)' : 'var(--border)',
-            color: 'var(--gold)',
-            fontWeight: 600,
-          }}
-          onMouseEnter={onGoldHover}
-          onMouseLeave={onGoldLeave}
-        >
-          <span style={{ fontSize: 13 }}>✦</span>
-          <span>Copilot</span>
-        </button>
         <button type="button" onClick={() => openDialog('comments')} style={outlineBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>Comments</button>
         <button
           type="button"
