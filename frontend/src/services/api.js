@@ -105,6 +105,16 @@ export const uploadApi = {
       url: resolveUploadUrl(data.url),
     };
   },
+  file: async (file) => {
+    const fd = new FormData(); fd.append('file', file);
+    const res = await fetch(`${API_BASE}/upload/file`, { method: 'POST', body: fd });
+    if (!res.ok) throw new ApiError('Upload failed', res.status);
+    const data = await res.json();
+    return {
+      ...data,
+      url: resolveUploadUrl(data.url),
+    };
+  },
 };
 
 function resolveUploadUrl(url) {

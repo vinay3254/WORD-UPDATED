@@ -370,7 +370,6 @@ export function EditorCanvas() {
             <EditorContent editor={editor} />
           </div>
           <FloatingFormatToolbar editor={editor} scrollContainerRef={scrollRef} />
-          <InlinePragnaTrigger editor={editor} scrollContainerRef={scrollRef} />
           <PictureFormatToolbar editor={editor} scrollContainerRef={scrollRef} />
           <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2 }}>
             {Array.from({ length: pageCount }).map((_, i) => (
