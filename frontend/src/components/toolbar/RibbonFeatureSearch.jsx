@@ -14,7 +14,7 @@ const makeAction = (key, { title, tab, keywords = [], run }) => ({
 });
 
 export function RibbonFeatureSearch({ compactWidth = 190, onActivateTab: onActivateTabProp }) {
-  const { openDialog, toast, setActiveTab, watermarkText, setWatermarkText } = useUIStore();
+  const { openDialog, toast, setActiveTab, watermarkText, setWatermarkText, setFindQuery, openPragna } = useUIStore();
   const onActivateTab = onActivateTabProp ?? null;
   const { editor } = useEditorStore();
 
@@ -488,10 +488,15 @@ export function RibbonFeatureSearch({ compactWidth = 190, onActivateTab: onActiv
     }
 
     if (e.key === 'Enter') {
-      if (!open && filtered.length) setOpen(true);
-      if (!filtered.length) return;
-      e.preventDefault();
-      runAction(filtered[activeIdx] || filtered[0]);
+      if (filtered.length > 0) {
+        e.preventDefault();
+        runAction(filtered[activeIdx] || filtered[0]);
+      } else if (query.trim()) {
+        e.preventDefault();
+        setOpen(false);
+        setFindQuery(query.trim());
+        openDialog('findReplace');
+      }
       return;
     }
   };
