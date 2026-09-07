@@ -1,0 +1,1 @@
+export { ViewTab } from './OtherTabs';
