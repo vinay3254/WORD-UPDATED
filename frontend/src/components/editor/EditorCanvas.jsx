@@ -6,6 +6,7 @@ import { useImageResizeAndDrag } from '@/hooks/useImageResizeAndDrag';
 import { HorizontalRuler } from './HorizontalRuler';
 import { FloatingFormatToolbar } from './FloatingFormatToolbar';
 import { PictureFormatToolbar } from './PictureFormatToolbar';
+import { InlinePragnaTrigger } from './InlinePragnaTrigger';
 import { useUIStore, useDocumentStore, useCollaborationStore } from '@/store';
 import { getLayoutMetrics, PAGE_GAP, PAGE_BORDER_WIDTH } from '@/utils/pageLayout';
 
@@ -338,6 +339,7 @@ export function EditorCanvas() {
             <EditorContent editor={editor} />
           </div>
           <FloatingFormatToolbar editor={editor} scrollContainerRef={scrollRef} />
+          <InlinePragnaTrigger editor={editor} scrollContainerRef={scrollRef} />
           <PictureFormatToolbar editor={editor} scrollContainerRef={scrollRef} />
           <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2 }}>
             {Array.from({ length: pageCount }).map((_, i) => (

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useUIStore, useEditorStore } from '@/store';
+import { useUIStore, useEditorStore, useDocumentStore } from '@/store';
 import { Modal, Button, Label, Stack } from '@/components/ui';
 import { runDictation, runImageTextCapture, runReadAloud, runSmartSuggestions } from '@/utils/smartFeatures';
 
@@ -122,6 +122,7 @@ function setPageColor(color) {
   page.dataset.pageColor = color;
   page.style.backgroundColor = color;
   adjustTextColorForPageBackground(color);
+  useDocumentStore.getState().setDesign({ pageColor: color, pageColorMode: 'custom' });
   return true;
 }
 
@@ -132,6 +133,7 @@ function clearPageColor() {
   page.style.backgroundColor = '';
   // Reset to theme-based text color
   adjustTextColorForPageBackground('#ffffff');
+  useDocumentStore.getState().setDesign({ pageColor: '#ffffff', pageColorMode: 'theme' });
   return true;
 }
 
@@ -177,10 +179,18 @@ function applyPageBorderPreset({ setting, style, color, width, applyTo }) {
   const nextWidth = Number(width || 2);
   const nextApplyTo = applyTo || page.dataset.pageBorderApplyTo || 'whole-document';
 
+  page.dataset.pageBorder = `${nextStyle}|${nextColor}|${nextWidth}`;
   page.dataset.pageBorderSetting = nextSetting;
   page.dataset.pageBorderStyle = nextStyle;
   page.dataset.pageBorderColor = nextColor;
   page.dataset.pageBorderWidth = String(nextWidth);
+
+  useDocumentStore.getState().setDesign({
+    borderSetting: nextSetting,
+    borderStyle: nextSetting === 'none' ? 'none' : nextStyle,
+    borderColor: nextColor,
+    borderWidth: nextWidth,
+  });
 
   if (!frames.length) return true;
 
@@ -392,6 +402,15 @@ function applyThemePreset(theme) {
   if (theme.pageColor) {
     setPageColor(theme.pageColor);
   }
+  useDocumentStore.getState().setDesign({
+    accent: theme.accent,
+    heading: theme.heading || theme.accent,
+    subtle: theme.subtle || '#444444',
+    font: theme.font || 'Crimson Pro',
+    spacing: theme.spacing || '1.7',
+    effect: theme.effect || 'none',
+    pageColor: theme.pageColor || '#ffffff',
+  });
   return true;
 }
 

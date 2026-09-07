@@ -301,8 +301,17 @@ export const useUIStore = create((set) => ({
     wordCount: false, language: false, reviewingPane: false,
     accessibility: false, compareDocuments: false, restrictEditing: false,
     commandMap: false,
+    pragnaAi: false,
     help: false, feedback: false, whatsNew: false, about: false,
   },
+  pragnaInitialTab: 'ask',
+  pragnaInitialPrompt: '',
+  openPragna: (initialTab = 'ask', initialPrompt = '') =>
+    set((s) => ({
+      dialogs: { ...s.dialogs, pragnaAi: true },
+      pragnaInitialTab: initialTab,
+      pragnaInitialPrompt: initialPrompt,
+    })),
   openDialog: (name) => set((s) => ({ dialogs: { ...s.dialogs, [name]: true } })),
   closeDialog: (name) => set((s) => ({ dialogs: { ...s.dialogs, [name]: false } })),
   closeAll: () => set((s) => ({ dialogs: Object.fromEntries(Object.keys(s.dialogs).map((k) => [k, false])) })),

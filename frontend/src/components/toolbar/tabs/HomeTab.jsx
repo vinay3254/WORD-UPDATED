@@ -33,7 +33,7 @@ export function HomeTab() {
     formatPainterMarks,
     setFormatPainterMarks,
   } = useEditorStore();
-  const { openDialog, toast } = useUIStore();
+  const { openDialog, toast, openPragna } = useUIStore();
   const { applyFontSize } = useFontFormattingControls(editor);
   const painterActive = useRef(false);
   const [showTextColors, setShowTextColors] = useState(false);
@@ -41,6 +41,19 @@ export function HomeTab() {
   const [showFormattingMarks, setShowFormattingMarks] = useState(false);
   const [textPalettePos, setTextPalettePos] = useState({ top: 0, left: 0 });
   const [highlightPalettePos, setHighlightPalettePos] = useState({ top: 0, left: 0 });
+
+  const handlePragnaClick = () => {
+    if (!editor) {
+      openPragna('ask');
+      return;
+    }
+    const { from, to } = editor.state.selection;
+    if (from !== to) {
+      openPragna('edit');
+    } else {
+      openPragna('ask');
+    }
+  };
 
   const savedSelectionRef = useRef(null);
 
@@ -481,6 +494,116 @@ export function HomeTab() {
           <Divider vertical />
           <Tooltip text="Find & Replace" shortcut="Ctrl+H"><Button style={{ ...toolBtn, width: 68 }} onClick={() => openDialog('findReplace')}>Find</Button></Tooltip>
           <Tooltip text="Select All" shortcut="Ctrl+A"><Button style={{ ...toolBtn, width: 68 }} onClick={() => run(() => editor.chain().selectAll().run())}>Select</Button></Tooltip>
+        </div>
+      </RibbonGroup>
+
+      <RibbonGroup label="Pragna">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {/* MS Word Copilot-style Hero Button in Pragna Gold Theme */}
+          <Tooltip text="Pragna AI (Alt+I) - Draft, edit as instructed, summarize, or ask with Gemma 31B">
+            <button
+              onClick={handlePragnaClick}
+              style={{
+                width: 80,
+                height: 60,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 2,
+                padding: '4px 6px',
+                background: 'linear-gradient(135deg, rgba(212,175,55,0.2) 0%, rgba(201,168,76,0.06) 100%)',
+                border: '1px solid rgba(212,175,55,0.4)',
+                borderRadius: 4,
+                cursor: 'pointer',
+                boxShadow: '0 0 10px rgba(212,175,55,0.15)',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(212,175,55,0.3) 0%, rgba(201,168,76,0.12) 100%)';
+                e.currentTarget.style.borderColor = 'var(--gold)';
+                e.currentTarget.style.boxShadow = '0 0 16px rgba(212,175,55,0.35)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(212,175,55,0.2) 0%, rgba(201,168,76,0.06) 100%)';
+                e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)';
+                e.currentTarget.style.boxShadow = '0 0 10px rgba(212,175,55,0.15)';
+              }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="pragnaGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#fae084" />
+                    <stop offset="50%" stopColor="#d4af37" />
+                    <stop offset="100%" stopColor="#aa8420" />
+                  </linearGradient>
+                </defs>
+                <path d="M12 2L14.6 8.4L21 11L14.6 13.6L12 20L9.4 13.6L3 11L9.4 8.4L12 2Z" fill="url(#pragnaGoldGrad)" />
+                <path d="M19 14L20.2 16.8L23 18L20.2 19.2L19 22L17.8 19.2L15 18L17.8 16.8L19 14Z" fill="url(#pragnaGoldGrad)" />
+              </svg>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.2px', lineHeight: 1.1 }}>Pragna</span>
+              <span style={{ fontSize: 9, color: 'var(--text-secondary)', lineHeight: 1, fontWeight: 500 }}>Gemma 31B</span>
+            </button>
+          </Tooltip>
+
+          {/* Quick action buttons like MS Word Copilot menu */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Tooltip text="Edit selected text according to your custom instructions">
+              <Button
+                style={{
+                  ...toolBtn,
+                  width: 124,
+                  height: 27,
+                  justifyContent: 'flex-start',
+                  padding: '0 8px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--gold)',
+                  background: 'rgba(212,175,55,0.1)',
+                  border: '1px solid rgba(212,175,55,0.35)',
+                }}
+                onClick={() => openPragna('edit')}
+              >
+                <span style={{ marginRight: 5 }}>✏️</span> Edit Selection
+              </Button>
+            </Tooltip>
+
+            <div style={{ display: 'flex', gap: 3 }}>
+              <Tooltip text="Draft new document content or report">
+                <Button
+                  style={{
+                    ...toolBtn,
+                    width: 60,
+                    height: 27,
+                    justifyContent: 'center',
+                    padding: '0 4px',
+                    fontSize: 11,
+                  }}
+                  onClick={() => openPragna('generate')}
+                >
+                  <span style={{ marginRight: 3 }}>✎</span> Draft
+                </Button>
+              </Tooltip>
+
+              <Tooltip text="Summarize selected text or document">
+                <Button
+                  style={{
+                    ...toolBtn,
+                    width: 61,
+                    height: 27,
+                    justifyContent: 'center',
+                    padding: '0 4px',
+                    fontSize: 11,
+                  }}
+                  onClick={() => openPragna('summarize')}
+                >
+                  <span style={{ marginRight: 3 }}>▤</span> Sum
+                </Button>
+              </Tooltip>
+            </div>
+          </div>
         </div>
       </RibbonGroup>
 
