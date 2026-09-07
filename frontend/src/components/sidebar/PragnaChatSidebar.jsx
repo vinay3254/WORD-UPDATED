@@ -204,6 +204,7 @@ Ask me anything or pick a quick prompt below!`,
 
     const htmlContent = msg.html || markdownToHtml(msg.content);
     const range = msg.targetRange || savedRangeRef.current;
+    const isDocEmpty = !editor.state.doc.textContent.trim();
 
     try {
       if (range && range.from !== range.to) {
@@ -215,21 +216,19 @@ Ask me anything or pick a quick prompt below!`,
           .insertContentAt(range.from, htmlContent)
           .run();
         toast('✓ Replaced selection in document', 'success');
+      } else if (isDocEmpty || msg.targetScope === 'document') {
+        // Blank document or document scope -> populate document
+        editor.chain().focus().setContent(htmlContent).run();
+        toast(isDocEmpty ? '✓ Inserted into blank document' : '✓ Replaced document content', 'success');
       } else {
-        // Current cursor or selection
-        const { from, to } = editor.state.selection;
-        if (from !== to) {
-          editor.chain().focus().deleteRange({ from, to }).insertContentAt(from, htmlContent).run();
-        } else {
-          editor.chain().focus().insertContent(htmlContent).run();
-        }
-        toast('✓ Applied to document', 'success');
+        // Current cursor position
+        editor.chain().focus().insertContent(htmlContent).run();
+        toast('✓ Inserted into document', 'success');
       }
     } catch (err) {
       console.error('Edit execution error:', err);
-      // Fallback
-      editor.chain().focus().insertContent(htmlContent).run();
-      toast('✓ Inserted into document', 'success');
+      editor.chain().focus().setContent(htmlContent).run();
+      toast('✓ Applied to document', 'success');
     }
   };
 
