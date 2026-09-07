@@ -30,7 +30,7 @@ I can help you:
 - **Summarize & Extract** key findings, tables, or action items
 - **Research the Live Web** with verifiable citations
 
-Ask me anything or pick a quick prompt below!`,
+Ask me anything or choose a quick prompt below!`,
       html: '',
       timestamp: new Date(),
     },
@@ -41,7 +41,7 @@ Ask me anything or pick a quick prompt below!`,
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [selectedText, setSelectedText] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
-  const [scope, setScope] = useState('document'); // 'selection' | 'cursor' | 'document'
+  const [scope, setScope] = useState('document');
 
   const savedRangeRef = useRef({ from: 0, to: 0, text: '' });
   const messagesEndRef = useRef(null);
@@ -119,7 +119,8 @@ Ask me anything or pick a quick prompt below!`,
   }, [messages, loading, copilotOpen]);
 
   const handleSendMessage = async (customText) => {
-    const promptToSend = (customText || inputPrompt).trim();
+    const rawPrompt = customText || inputPrompt || textareaRef.current?.value || '';
+    const promptToSend = rawPrompt.trim();
     if (!promptToSend || loading) return;
 
     const userMessageId = `user-${Date.now()}`;
@@ -133,6 +134,7 @@ Ask me anything or pick a quick prompt below!`,
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInputPrompt('');
+    if (textareaRef.current) textareaRef.current.value = '';
     setLoading(true);
 
     try {
@@ -208,7 +210,6 @@ Ask me anything or pick a quick prompt below!`,
 
     try {
       if (range && range.from !== range.to) {
-        // Replace exact selection range
         editor
           .chain()
           .focus()
@@ -217,11 +218,9 @@ Ask me anything or pick a quick prompt below!`,
           .run();
         toast('✓ Replaced selection in document', 'success');
       } else if (isDocEmpty || msg.targetScope === 'document') {
-        // Blank document or document scope -> populate document
         editor.chain().focus().setContent(htmlContent).run();
         toast(isDocEmpty ? '✓ Inserted into blank document' : '✓ Replaced document content', 'success');
       } else {
-        // Current cursor position
         editor.chain().focus().insertContent(htmlContent).run();
         toast('✓ Inserted into document', 'success');
       }
@@ -263,38 +262,38 @@ Ask me anything or pick a quick prompt below!`,
     return (
       <button
         onClick={toggleCopilot}
-        title="Open Pragna"
+        title="Open Pragna Copilot"
         style={{
           position: 'fixed',
           right: 0,
           top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 1000,
-          background: 'linear-gradient(180deg, #1f1a10 0%, #0e0d0a 100%)',
+          background: 'var(--bg-surface)',
           border: '1px solid var(--gold-border)',
           borderRight: 'none',
-          borderRadius: '8px 0 0 8px',
-          padding: '10px 8px',
+          borderRadius: '6px 0 0 6px',
+          padding: '8px 6px',
           color: 'var(--gold)',
           cursor: 'pointer',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 6,
-          boxShadow: '-4px 0 16px rgba(0,0,0,0.35)',
+          boxShadow: '-3px 0 12px rgba(0,0,0,0.3)',
           transition: 'all 0.15s ease',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.paddingRight = '12px';
-          e.currentTarget.style.boxShadow = '-6px 0 20px rgba(212,175,55,0.25)';
+          e.currentTarget.style.background = 'var(--bg-elevated)';
+          e.currentTarget.style.boxShadow = '-4px 0 16px rgba(212,175,55,0.2)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.paddingRight = '8px';
-          e.currentTarget.style.boxShadow = '-4px 0 16px rgba(0,0,0,0.35)';
+          e.currentTarget.style.background = 'var(--bg-surface)';
+          e.currentTarget.style.boxShadow = '-3px 0 12px rgba(0,0,0,0.3)';
         }}
       >
-        <span style={{ fontSize: 16 }}>✦</span>
-        <span style={{ writingMode: 'vertical-rl', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em' }}>
+        <span style={{ fontSize: 14 }}>✦</span>
+        <span style={{ writingMode: 'vertical-rl', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em' }}>
           PRAGNA
         </span>
       </button>
@@ -304,9 +303,9 @@ Ask me anything or pick a quick prompt below!`,
   return (
     <div
       style={{
-        width: 380,
-        minWidth: 340,
-        maxWidth: 440,
+        width: 360,
+        minWidth: 320,
+        maxWidth: 420,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -323,68 +322,75 @@ Ask me anything or pick a quick prompt below!`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '10px 14px',
+          padding: '8px 12px',
           borderBottom: '1px solid var(--border)',
           background: 'var(--bg-surface)',
-          gap: 6,
+          height: 38,
+          boxSizing: 'border-box',
         }}
       >
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 16, color: 'var(--gold)' }}>✦</span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
+          <span style={{ fontSize: 14, color: 'var(--gold)', lineHeight: 1 }}>✦</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
             Pragna
           </span>
         </div>
 
-        {/* Actions (Web, Clear, Close) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {/* Web Toggle */}
+        {/* Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {/* Web Search Toggle */}
           <button
             onClick={() => setWebSearchEnabled(!webSearchEnabled)}
-            title={`Live Web Search: ${webSearchEnabled ? 'ON' : 'OFF'}`}
+            title={`Web Grounding: ${webSearchEnabled ? 'ON' : 'OFF'}`}
             style={{
               background: webSearchEnabled ? 'var(--gold)' : 'var(--bg-elevated)',
               color: webSearchEnabled ? 'var(--text-on-gold)' : 'var(--text-secondary)',
               border: `1px solid ${webSearchEnabled ? 'var(--gold)' : 'var(--border)'}`,
-              borderRadius: 4,
-              padding: '3px 7px',
+              borderRadius: 3,
+              padding: '2px 6px',
               fontSize: 10,
               fontWeight: 600,
               cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 3,
               transition: 'all 0.12s ease',
             }}
           >
-            🌐 Web: {webSearchEnabled ? 'ON' : 'OFF'}
+            <span>🌐</span>
+            <span>{webSearchEnabled ? 'ON' : 'OFF'}</span>
           </button>
 
           {/* Clear */}
           <button
             onClick={handleClearChat}
-            title="Clear Chat"
+            title="Clear Chat History"
             style={{
               background: 'transparent',
               color: 'var(--text-muted)',
               border: 'none',
-              padding: '3px 5px',
+              padding: '2px 4px',
               fontSize: 11,
               cursor: 'pointer',
+              borderRadius: 3,
             }}
           >
             🗑️
           </button>
 
-          {/* Close Sidebar */}
+          {/* Close */}
           <button
             onClick={toggleCopilot}
-            title="Close Pragna Panel"
+            title="Close Panel"
             style={{
               background: 'transparent',
               color: 'var(--text-muted)',
               border: 'none',
-              padding: '3px 6px',
-              fontSize: 13,
+              padding: '2px 5px',
+              fontSize: 12,
               cursor: 'pointer',
+              borderRadius: 3,
             }}
           >
             ✕
@@ -398,22 +404,24 @@ Ask me anything or pick a quick prompt below!`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '6px 14px',
+          padding: '4px 12px',
           background: 'var(--bg-elevated)',
           borderBottom: '1px solid var(--border)',
-          fontSize: 11,
+          fontSize: 10,
           color: 'var(--text-muted)',
+          minHeight: 24,
+          boxSizing: 'border-box',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <span style={{ color: 'var(--gold)' }}>📎</span>
           <span>
             {hasSelection ? `Selection (${wordCount} words)` : `Document (${wordCount} words)`}
           </span>
         </div>
 
-        <span style={{ fontSize: 10, color: 'var(--text-secondary)' }}>
-          {scope === 'selection' ? 'Target: Selection' : 'Target: Document'}
+        <span style={{ fontSize: 9, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          {scope === 'selection' ? 'Selection' : 'Document'}
         </span>
       </div>
 
@@ -422,10 +430,10 @@ Ask me anything or pick a quick prompt below!`,
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '12px',
+          padding: '10px 12px',
           display: 'flex',
           flexDirection: 'column',
-          gap: 12,
+          gap: 10,
         }}
       >
         {messages.map((msg) => {
@@ -442,33 +450,29 @@ Ask me anything or pick a quick prompt below!`,
             >
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  fontSize: 10,
+                  fontSize: 9,
                   color: 'var(--text-muted)',
-                  marginBottom: 3,
+                  marginBottom: 2,
                   padding: '0 2px',
+                  fontWeight: 600,
                 }}
               >
-                <span style={{ fontWeight: 600, color: isUser ? 'var(--gold)' : 'var(--text-primary)' }}>
-                  {isUser ? 'You' : '✦ Pragna'}
-                </span>
+                {isUser ? 'You' : '✦ Pragna'}
               </div>
 
               {/* Message Bubble */}
               <div
                 style={{
                   maxWidth: '92%',
-                  padding: '10px 12px',
-                  borderRadius: isUser ? '10px 10px 2px 10px' : '10px 10px 10px 2px',
-                  background: isUser ? 'linear-gradient(135deg, rgba(212,175,55,0.22) 0%, rgba(212,175,55,0.08) 100%)' : 'var(--bg-elevated)',
+                  padding: '8px 11px',
+                  borderRadius: isUser ? '8px 8px 1px 8px' : '8px 8px 8px 1px',
+                  background: isUser ? 'rgba(212,175,55,0.14)' : 'var(--bg-elevated)',
                   border: `1px solid ${isUser ? 'var(--gold-border)' : 'var(--border)'}`,
                   color: 'var(--text-primary)',
                   fontSize: 12,
                   lineHeight: 1.5,
                   wordBreak: 'break-word',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                 }}
               >
                 {isUser ? (
@@ -480,19 +484,19 @@ Ask me anything or pick a quick prompt below!`,
                       __html: msg.html || markdownToHtml(msg.content),
                     }}
                     style={{
-                      '& p': { margin: '0 0 6px 0' },
-                      '& h1, & h2, & h3': { fontSize: 13, color: 'var(--gold)', margin: '6px 0 3px' },
-                      '& ul, & ol': { paddingLeft: 16, margin: '3px 0 6px 0' },
+                      '& p': { margin: '0 0 5px 0' },
+                      '& h1, & h2, & h3': { fontSize: 12, color: 'var(--gold)', margin: '5px 0 2px' },
+                      '& ul, & ol': { paddingLeft: 14, margin: '2px 0 5px 0' },
                       '& li': { marginBottom: 2 },
-                      '& pre': { background: '#0a0a0a', padding: 8, borderRadius: 4, overflowX: 'auto', border: '1px solid var(--border)' },
-                      '& code': { fontFamily: 'monospace', fontSize: 11, background: 'rgba(255,255,255,0.08)', padding: '1px 3px', borderRadius: 2 },
+                      '& pre': { background: '#0a0a0a', padding: 6, borderRadius: 3, overflowX: 'auto', border: '1px solid var(--border)' },
+                      '& code': { fontFamily: 'monospace', fontSize: 11, background: 'rgba(255,255,255,0.06)', padding: '1px 3px', borderRadius: 2 },
                     }}
                   />
                 )}
 
-                {/* Web sources */}
+                {/* Sources */}
                 {msg.sources && msg.sources.length > 0 && (
-                  <div style={{ marginTop: 8, paddingTop: 6, borderTop: '1px solid var(--border)', fontSize: 10 }}>
+                  <div style={{ marginTop: 6, paddingTop: 5, borderTop: '1px solid var(--border)', fontSize: 9 }}>
                     <div style={{ fontWeight: 600, color: 'var(--gold)', marginBottom: 2 }}>🌐 Sources:</div>
                     {msg.sources.map((s, idx) => (
                       <a
@@ -509,18 +513,18 @@ Ask me anything or pick a quick prompt below!`,
                 )}
               </div>
 
-              {/* Action Buttons for Assistant Message */}
+              {/* Action Buttons */}
               {!isUser && msg.id !== 'welcome' && !msg.isError && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4, paddingLeft: 2 }}>
                   <button
                     onClick={() => handleReplaceInDoc(msg)}
-                    title="Replace target in document"
+                    title="Apply/Replace directly in document"
                     style={{
                       background: 'var(--gold)',
                       color: 'var(--text-on-gold)',
                       border: '1px solid var(--gold-border)',
                       borderRadius: 3,
-                      padding: '3px 8px',
+                      padding: '2px 7px',
                       fontSize: 10,
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -529,18 +533,18 @@ Ask me anything or pick a quick prompt below!`,
                       gap: 3,
                     }}
                   >
-                    <span>⚡ Replace in Document</span>
+                    <span>⚡ Replace</span>
                   </button>
 
                   <button
                     onClick={() => handleInsertAtCursor(msg)}
-                    title="Insert directly into document at cursor"
+                    title="Insert at current cursor"
                     style={{
                       background: 'var(--bg-elevated)',
                       color: 'var(--text-secondary)',
                       border: '1px solid var(--border)',
                       borderRadius: 3,
-                      padding: '3px 6px',
+                      padding: '2px 6px',
                       fontSize: 10,
                       cursor: 'pointer',
                     }}
@@ -556,7 +560,7 @@ Ask me anything or pick a quick prompt below!`,
                       color: 'var(--text-muted)',
                       border: '1px solid var(--border)',
                       borderRadius: 3,
-                      padding: '3px 5px',
+                      padding: '2px 5px',
                       fontSize: 10,
                       cursor: 'pointer',
                     }}
@@ -570,7 +574,7 @@ Ask me anything or pick a quick prompt below!`,
         })}
 
         {loading && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', color: 'var(--gold)', fontSize: 11, fontStyle: 'italic' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 6px', color: 'var(--gold)', fontSize: 11, fontStyle: 'italic' }}>
             <span>✦</span>
             <span>Pragna is writing...</span>
           </div>
@@ -585,7 +589,7 @@ Ask me anything or pick a quick prompt below!`,
           display: 'flex',
           gap: 4,
           overflowX: 'auto',
-          padding: '6px 10px',
+          padding: '5px 8px',
           background: 'var(--bg-elevated)',
           borderTop: '1px solid var(--border)',
           whiteSpace: 'nowrap',
@@ -600,8 +604,8 @@ Ask me anything or pick a quick prompt below!`,
               background: 'var(--bg-surface)',
               color: 'var(--text-secondary)',
               border: '1px solid var(--border)',
-              borderRadius: 12,
-              padding: '3px 8px',
+              borderRadius: 10,
+              padding: '2px 7px',
               fontSize: 10,
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.6 : 1,
@@ -615,11 +619,11 @@ Ask me anything or pick a quick prompt below!`,
       {/* Input Box */}
       <div
         style={{
-          padding: '8px 10px',
+          padding: '6px 8px',
           background: 'var(--bg-surface)',
           borderTop: '1px solid var(--border)',
           display: 'flex',
-          gap: 6,
+          gap: 5,
           alignItems: 'flex-end',
         }}
       >
@@ -632,12 +636,12 @@ Ask me anything or pick a quick prompt below!`,
           rows={2}
           style={{
             flex: 1,
-            padding: '8px 10px',
-            borderRadius: 4,
+            padding: '6px 8px',
+            borderRadius: 3,
             border: '1px solid var(--border)',
             background: 'var(--bg-elevated)',
             color: 'var(--text-primary)',
-            fontSize: 12,
+            fontSize: 11,
             fontFamily: 'var(--font-ui)',
             outline: 'none',
             resize: 'none',
@@ -647,17 +651,17 @@ Ask me anything or pick a quick prompt below!`,
 
         <button
           onClick={() => handleSendMessage()}
-          disabled={loading || !inputPrompt.trim()}
+          disabled={loading}
           style={{
-            height: 38,
-            padding: '0 12px',
-            background: inputPrompt.trim() && !loading ? 'var(--gold)' : 'var(--bg-elevated)',
-            color: inputPrompt.trim() && !loading ? 'var(--text-on-gold)' : 'var(--text-muted)',
-            border: `1px solid ${inputPrompt.trim() && !loading ? 'var(--gold-border)' : 'var(--border)'}`,
-            borderRadius: 4,
-            fontSize: 12,
+            height: 32,
+            padding: '0 10px',
+            background: !loading ? 'var(--gold)' : 'var(--bg-elevated)',
+            color: !loading ? 'var(--text-on-gold)' : 'var(--text-muted)',
+            border: `1px solid ${!loading ? 'var(--gold-border)' : 'var(--border)'}`,
+            borderRadius: 3,
+            fontSize: 11,
             fontWeight: 600,
-            cursor: inputPrompt.trim() && !loading ? 'pointer' : 'not-allowed',
+            cursor: !loading ? 'pointer' : 'not-allowed',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
