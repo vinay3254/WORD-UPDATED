@@ -158,7 +158,7 @@ export function InsertTab() {
   const label = (t, dd = false) => <span style={{ fontSize: 12, lineHeight: 1.05, textAlign: 'center' }}>{t}{dd ? ' v' : ''}</span>;
 
   return (
-    <div style={wrap}>
+    <>
       <div style={group}>
         <div style={cmds}>
           <button style={cmdStyle} onClick={() => run(() => editor.chain().focus().insertPageBreak().run())}>
@@ -218,7 +218,7 @@ export function InsertTab() {
         <div style={footer}>Header & Footer</div>
       </div>
 
-      <div style={{ ...group, minWidth: 330 }}>
+      <div style={group}>
         <div style={cmds}>
           <button
             style={cmdStyle}
@@ -254,7 +254,7 @@ export function InsertTab() {
         <div style={footer}>Symbols</div>
       </div>
 
-      <div style={{ ...group, borderRight: 'none', minWidth: 220 }}>
+      <div style={{ ...group, borderRight: 'none' }}>
         <div style={cmds}>
           <button style={{ ...cmdStyle, width: 72 }} onClick={() => openDialog('digitalSignature')}>
             {iconBox('signature')}
@@ -271,6 +271,6 @@ export function InsertTab() {
         </div>
         <div style={footer}>Digital Signatures</div>
       </div>
-    </div>
+    </>
   );
 }

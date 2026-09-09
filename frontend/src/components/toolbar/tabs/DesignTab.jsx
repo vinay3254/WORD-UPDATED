@@ -348,18 +348,7 @@ export function DesignTab() {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'stretch',
-        height: '100%',
-        width: '100%',
-        background: 'var(--ribbon-surface)',
-        border: '1px solid var(--ribbon-divider)',
-        borderTop: 'none',
-        userSelect: 'none',
-      }}
-    >
+    <>
       {/* ── Group 1: Document Formatting (Themes) ── */}
       <div
         style={{
@@ -419,7 +408,7 @@ export function DesignTab() {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingBottom: 3, minWidth: 0, flex: 1 }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 5, marginTop: 1,
-            overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin',
+            overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none',
           }}>
             {THEMES.map((theme, idx) => {
               const active = design.accent === theme.accent && (design.headingFont === theme.font || design.font === theme.font);
@@ -661,7 +650,7 @@ export function DesignTab() {
       >
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, marginTop: 1,
-          overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin',
+          overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none',
         }}>
           {TABLE_STYLES.map((ts) => (
             <button
@@ -1351,6 +1340,6 @@ export function DesignTab() {
           </Stack>
         </Modal>
       )}
-    </div>
+    </>
   );
 }

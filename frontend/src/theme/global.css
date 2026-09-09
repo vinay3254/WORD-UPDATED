@@ -380,10 +380,13 @@ body {
 
 /* ── Ribbon scroll — hide scrollbar to prevent layout shift ── */
 .ribbon-scroll {
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
 }
 .ribbon-scroll::-webkit-scrollbar {
-  display: none; /* Chrome / Safari */
+  display: none !important; /* Chrome / Safari */
+  width: 0 !important;
+  height: 0 !important;
 }
 
 ::selection { background: rgba(212,175,55,0.28); color: inherit; }

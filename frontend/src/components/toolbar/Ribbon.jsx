@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { useUIStore, useEditorStore } from '@/store';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -40,29 +40,120 @@ export function Ribbon() {
   const location = useLocation();
   const { activeTab, setActiveTab, openDialog } = useUIStore();
   const Content = TAB_CONTENT[activeTab] || HomeTab;
-  const ribbonScrollRef = useRef(null);
-  const fadeLeftRef = useRef(null);
-  const fadeRightRef = useRef(null);
 
-  const updateScrollFades = useCallback(() => {
-    const el = ribbonScrollRef.current;
-    if (!el) return;
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    const canScrollLeft = scrollLeft > 2;
-    const canScrollRight = scrollLeft + clientWidth < scrollWidth - 2;
-    if (fadeLeftRef.current) fadeLeftRef.current.style.opacity = canScrollLeft ? '1' : '0';
-    if (fadeRightRef.current) fadeRightRef.current.style.opacity = canScrollRight ? '1' : '0';
-  }, []);
+  const ribbonContainerRef = useRef(null);
+  const ribbonContentRef = useRef(null);
+  const overflowBtnRef = useRef(null);
+  const popoverRef = useRef(null);
+  const tabWidthsCache = useRef({});
 
+  const [visibleCount, setVisibleCount] = useState(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const [overflowOpen, setOverflowOpen] = useState(false);
+
+  // Calculate visible groups based on container width
+  const computeVisible = useCallback(() => {
+    const container = ribbonContainerRef.current;
+    const content = ribbonContentRef.current;
+    if (!container || !content) return;
+
+    const OVERFLOW_BTN_SPACE = 96; // room for "··· More ▾" button + margin/gap
+    const GAP = 6;
+    const PADDING = 24; // left + right padding & safety margin
+
+    let widths = tabWidthsCache.current[activeTab];
+    if (!widths || widths.length === 0) {
+      const children = Array.from(content.children);
+      if (children.length === 0) return;
+      widths = children.map((c) => {
+        const rect = c.getBoundingClientRect();
+        return Math.ceil(rect.width || c.offsetWidth || 0);
+      });
+      tabWidthsCache.current[activeTab] = widths;
+    }
+
+    const count = widths.length;
+    setTotalCount(count);
+
+    const containerWidth = container.clientWidth;
+    const availableWidth = containerWidth - PADDING;
+    const totalRequiredWidth = widths.reduce((sum, w) => sum + w, 0) + (count - 1) * GAP;
+
+    if (totalRequiredWidth <= availableWidth) {
+      setVisibleCount(count);
+      return;
+    }
+
+    const availableWithBtn = availableWidth - OVERFLOW_BTN_SPACE;
+    let runningWidth = 0;
+    let fitCount = 0;
+
+    for (let i = 0; i < widths.length; i++) {
+      const nextWidth = runningWidth + widths[i] + (i > 0 ? GAP : 0);
+      if (nextWidth <= availableWithBtn) {
+        runningWidth = nextWidth;
+        fitCount = i + 1;
+      } else {
+        break;
+      }
+    }
+
+    setVisibleCount(Math.max(1, fitCount));
+  }, [activeTab]);
+
+  // When activeTab changes, close overflow and prepare for measurement
   useEffect(() => {
-    updateScrollFades();
-    const el = ribbonScrollRef.current;
-    if (!el) return;
-    el.addEventListener('scroll', updateScrollFades, { passive: true });
-    const ro = new ResizeObserver(updateScrollFades);
-    ro.observe(el);
-    return () => { el.removeEventListener('scroll', updateScrollFades); ro.disconnect(); };
-  }, [updateScrollFades, activeTab]);
+    setOverflowOpen(false);
+    if (!tabWidthsCache.current[activeTab]) {
+      setVisibleCount(null);
+    } else {
+      computeVisible();
+    }
+  }, [activeTab, computeVisible]);
+
+  // Measure children when visibleCount is reset to null
+  useLayoutEffect(() => {
+    if (visibleCount === null) {
+      computeVisible();
+    }
+  }, [visibleCount, computeVisible]);
+
+  // Listen for container resize
+  useEffect(() => {
+    const container = ribbonContainerRef.current;
+    if (!container) return;
+    const ro = new ResizeObserver(() => {
+      computeVisible();
+    });
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [computeVisible]);
+
+  // Close popover on outside click or Escape key
+  useEffect(() => {
+    if (!overflowOpen) return;
+    const onMouseDown = (e) => {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(e.target) &&
+        overflowBtnRef.current &&
+        !overflowBtnRef.current.contains(e.target)
+      ) {
+        setOverflowOpen(false);
+      }
+    };
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setOverflowOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [overflowOpen]);
 
   const onTabClick = (id) => {
     if (id === 'file') {
@@ -196,51 +287,142 @@ export function Ribbon() {
       </div>
 
 
-      {/* ── Ribbon content ── */}
+      {/* ── Ribbon content container with responsive overflow ── */}
       <div
+        ref={ribbonContainerRef}
         style={{
           position: 'relative',
           background: 'var(--ribbon-surface)',
           borderBottom: '1px solid var(--border)',
           minHeight: 92,
+          display: 'flex',
+          alignItems: 'stretch',
+          padding: '2px 8px 0',
+          boxSizing: 'border-box',
+          overflow: 'visible',
         }}
       >
+        {/* Dynamic style rules for active tab to hide overflowed groups in main row and shown groups in popover */}
+        {visibleCount !== null && (
+          <style>
+            {`
+              .ribbon-main-${activeTab} > :nth-child(n + ${visibleCount + 1}) {
+                display: none !important;
+              }
+              .ribbon-overflow-${activeTab} > :nth-child(-n + ${visibleCount}) {
+                display: none !important;
+              }
+            `}
+          </style>
+        )}
+
+        {/* Main row */}
         <div
-          ref={ribbonScrollRef}
-          className="ribbon-scroll"
+          ref={ribbonContentRef}
+          className={`ribbon-main-row ribbon-main-${activeTab}`}
           style={{
-            padding: '2px 8px 0',
-            overflowX: 'auto',
-            overflowY: 'hidden',
             display: 'flex',
             alignItems: 'stretch',
             gap: 6,
-            scrollBehavior: 'smooth',
-            scrollbarWidth: 'thin',
+            flex: 1,
+            minWidth: 0,
+            overflow: 'hidden',
           }}
         >
           <Content />
         </div>
-        {/* Left scroll fade */}
-        <div
-          ref={fadeLeftRef}
-          style={{
-            position: 'absolute', top: 0, left: 0, bottom: 0, width: 32,
-            background: 'linear-gradient(to right, var(--ribbon-surface), transparent)',
-            pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s',
-            zIndex: 2,
-          }}
-        />
-        {/* Right scroll fade */}
-        <div
-          ref={fadeRightRef}
-          style={{
-            position: 'absolute', top: 0, right: 0, bottom: 0, width: 32,
-            background: 'linear-gradient(to left, var(--ribbon-surface), transparent)',
-            pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s',
-            zIndex: 2,
-          }}
-        />
+
+        {/* "··· More" trigger button when content overflows container */}
+        {visibleCount !== null && totalCount > visibleCount && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              paddingLeft: 4,
+              flexShrink: 0,
+            }}
+          >
+            <button
+              ref={overflowBtnRef}
+              onClick={() => setOverflowOpen((prev) => !prev)}
+              aria-label="More ribbon options"
+              aria-expanded={overflowOpen}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                height: 72,
+                padding: '0 10px',
+                borderRadius: 4,
+                border: overflowOpen ? '1px solid var(--gold)' : '1px solid var(--border)',
+                background: overflowOpen ? 'var(--bg-hover)' : 'var(--bg-elevated)',
+                color: overflowOpen ? 'var(--gold)' : 'var(--text-primary)',
+                fontSize: 12,
+                fontFamily: 'var(--font-ui)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--gold)';
+                e.currentTarget.style.color = 'var(--gold)';
+                e.currentTarget.style.background = 'var(--bg-hover)';
+              }}
+              onMouseLeave={(e) => {
+                if (!overflowOpen) {
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                  e.currentTarget.style.color = 'var(--text-primary)';
+                  e.currentTarget.style.background = 'var(--bg-elevated)';
+                }
+              }}
+              title="More ribbon groups that do not fit in the current window"
+            >
+              <span style={{ letterSpacing: '1px' }}>•••</span>
+              <span>More</span>
+              <span style={{ fontSize: 9 }}>▾</span>
+            </button>
+          </div>
+        )}
+
+        {/* Overflow Popover shelf containing collapsed groups */}
+        {overflowOpen && visibleCount !== null && totalCount > visibleCount && (
+          <div
+            ref={popoverRef}
+            className="ribbon-overflow-popover ribbon-scroll"
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 2px)',
+              right: 8,
+              background: 'var(--ribbon-surface, #1e1e1e)',
+              border: '1px solid var(--border)',
+              borderRadius: 6,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+              padding: '4px 8px',
+              zIndex: 1050,
+              maxWidth: 'calc(100vw - 32px)',
+              overflowX: 'auto',
+              scrollbarWidth: 'none',
+              height: 90,
+              boxSizing: 'border-box',
+              display: 'flex',
+              alignItems: 'stretch',
+            }}
+          >
+            <div
+              className={`ribbon-overflow-row ribbon-overflow-${activeTab}`}
+              style={{
+                display: 'flex',
+                alignItems: 'stretch',
+                gap: 6,
+                height: '100%',
+              }}
+            >
+              <Content />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
