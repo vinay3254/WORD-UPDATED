@@ -105,6 +105,7 @@ export function LayoutTab() {
     sidebarOpen,
     toggleSidebar,
     toast,
+    openDialog,
   } = useUIStore();
 
   const [lineNumbersOn, setLineNumbersOn] = useState(false);
@@ -438,6 +439,11 @@ export function LayoutTab() {
         <TinyAction text="Align ▼" onClick={() => alignImage('left')} />
         <TinyAction text="Group ▼" onClick={() => toast('Grouping is limited in this editor', 'info')} />
         <TinyAction text="Rotate ▼" onClick={rotateImage} />
+      </Group>
+
+      <Group title="Structure & Security" width={210}>
+        <IconTextButton icon="📑" text="Master Doc" onClick={() => openDialog('masterDoc')} />
+        <IconTextButton icon="🔒" text="Security" onClick={() => openDialog('security')} />
       </Group>
     </div>
   );

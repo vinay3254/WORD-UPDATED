@@ -1,3 +1,4 @@
+import { useRef, useEffect, useCallback } from 'react';
 import { useUIStore, useEditorStore } from '@/store';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -37,8 +38,31 @@ const TAB_CONTENT = {
 export function Ribbon() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { activeTab, setActiveTab } = useUIStore();
+  const { activeTab, setActiveTab, openDialog } = useUIStore();
   const Content = TAB_CONTENT[activeTab] || HomeTab;
+  const ribbonScrollRef = useRef(null);
+  const fadeLeftRef = useRef(null);
+  const fadeRightRef = useRef(null);
+
+  const updateScrollFades = useCallback(() => {
+    const el = ribbonScrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const canScrollLeft = scrollLeft > 2;
+    const canScrollRight = scrollLeft + clientWidth < scrollWidth - 2;
+    if (fadeLeftRef.current) fadeLeftRef.current.style.opacity = canScrollLeft ? '1' : '0';
+    if (fadeRightRef.current) fadeRightRef.current.style.opacity = canScrollRight ? '1' : '0';
+  }, []);
+
+  useEffect(() => {
+    updateScrollFades();
+    const el = ribbonScrollRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', updateScrollFades, { passive: true });
+    const ro = new ResizeObserver(updateScrollFades);
+    ro.observe(el);
+    return () => { el.removeEventListener('scroll', updateScrollFades); ro.disconnect(); };
+  }, [updateScrollFades, activeTab]);
 
   const onTabClick = (id) => {
     if (id === 'file') {
@@ -119,19 +143,54 @@ export function Ribbon() {
           })}
         </div>
 
-        {/* Feature search bar (Word-like) */}
+        {/* Feature search bar and quick actions */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             height: 30,
-            paddingRight: 4,
+            paddingRight: 6,
             borderLeft: '1px solid var(--border)',
             background: 'var(--bg-app)',
             flexShrink: 0,
+            gap: 4,
           }}
         >
           <RibbonFeatureSearch onActivateTab={(id) => setActiveTab(id)} />
+          <button
+            onClick={() => openDialog('shortcuts')}
+            title="Remap Keyboard Shortcuts"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--text-secondary)',
+              fontSize: 13,
+              padding: '2px 6px',
+              borderRadius: 2,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold)'; e.currentTarget.style.background = 'var(--bg-hover)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'transparent'; }}
+          >
+            ⌨
+          </button>
+          <button
+            onClick={() => openDialog('help')}
+            title="Help & Reference (F1)"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--text-secondary)',
+              fontSize: 13,
+              padding: '2px 6px',
+              borderRadius: 2,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold)'; e.currentTarget.style.background = 'var(--bg-hover)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'transparent'; }}
+          >
+            ?
+          </button>
         </div>
 
       </div>
@@ -139,20 +198,49 @@ export function Ribbon() {
 
       {/* ── Ribbon content ── */}
       <div
-        className="ribbon-scroll"
         style={{
+          position: 'relative',
           background: 'var(--ribbon-surface)',
           borderBottom: '1px solid var(--border)',
           minHeight: 92,
-          padding: '2px 8px 0',
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          display: 'flex',
-          alignItems: 'stretch',
-          gap: 6,
         }}
       >
-        <Content />
+        <div
+          ref={ribbonScrollRef}
+          className="ribbon-scroll"
+          style={{
+            padding: '2px 8px 0',
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            display: 'flex',
+            alignItems: 'stretch',
+            gap: 6,
+            scrollBehavior: 'smooth',
+            scrollbarWidth: 'thin',
+          }}
+        >
+          <Content />
+        </div>
+        {/* Left scroll fade */}
+        <div
+          ref={fadeLeftRef}
+          style={{
+            position: 'absolute', top: 0, left: 0, bottom: 0, width: 32,
+            background: 'linear-gradient(to right, var(--ribbon-surface), transparent)',
+            pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s',
+            zIndex: 2,
+          }}
+        />
+        {/* Right scroll fade */}
+        <div
+          ref={fadeRightRef}
+          style={{
+            position: 'absolute', top: 0, right: 0, bottom: 0, width: 32,
+            background: 'linear-gradient(to left, var(--ribbon-surface), transparent)',
+            pointerEvents: 'none', opacity: 0, transition: 'opacity 0.15s',
+            zIndex: 2,
+          }}
+        />
       </div>
     </div>
   );
