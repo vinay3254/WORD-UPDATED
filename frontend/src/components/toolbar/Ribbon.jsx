@@ -43,54 +43,64 @@ export function Ribbon() {
 
   const ribbonContainerRef = useRef(null);
   const ribbonContentRef = useRef(null);
+  const ribbonMeasureContentRef = useRef(null);
   const overflowBtnRef = useRef(null);
-  const popoverRef = useRef(null);
+  const overflowWrapperRef = useRef(null);
+  const overflowMeasureRef = useRef(null);
   const tabWidthsCache = useRef({});
+  const popoverRef = useRef(null);
 
   const [visibleCount, setVisibleCount] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
   const [overflowOpen, setOverflowOpen] = useState(false);
 
-  // Calculate visible groups based on container width
+  // Calculate which groups fit based on *actual* rendered widths.
+  // Fixes: premature overflow when we over-subtract padding or use stale measurements.
   const computeVisible = useCallback(() => {
     const container = ribbonContainerRef.current;
     const content = ribbonContentRef.current;
     if (!container || !content) return;
 
-    const OVERFLOW_BTN_SPACE = 96; // room for "··· More ▾" button + margin/gap
-    const GAP = 6;
-    const PADDING = 24; // left + right padding & safety margin
+    const children = Array.from(content.children);
+    if (children.length === 0) return;
 
-    let widths = tabWidthsCache.current[activeTab];
-    if (!widths || widths.length === 0) {
-      const children = Array.from(content.children);
-      if (children.length === 0) return;
-      widths = children.map((c) => {
-        const rect = c.getBoundingClientRect();
-        return Math.ceil(rect.width || c.offsetWidth || 0);
-      });
-      tabWidthsCache.current[activeTab] = widths;
-    }
+    // Measure each group’s rendered width (avoid cached widths).
+    // Note: we include the label/caption row in width via the group’s actual box.
+    const GAP = Number.parseFloat(window.getComputedStyle(content).gap) || 6;
+    const tolerance = 0.5;
+
+    const widths = children.map((c) => {
+      const rect = c.getBoundingClientRect();
+      return Math.ceil(rect.width || c.offsetWidth || 0);
+    });
 
     const count = widths.length;
     setTotalCount(count);
 
-    const containerWidth = container.clientWidth;
-    const availableWidth = containerWidth - PADDING;
-    const totalRequiredWidth = widths.reduce((sum, w) => sum + w, 0) + (count - 1) * GAP;
+    // Inline rail width is what the groups currently have when overflow button
+    // is NOT taking space (this is the gap we’re trying to fill).
+    const inlineAvailable = Math.floor(content.getBoundingClientRect().width);
 
-    if (totalRequiredWidth <= availableWidth) {
+    const requiredInlineWidth = widths.reduce((sum, w) => sum + w, 0) + (count - 1) * GAP;
+    if (requiredInlineWidth <= inlineAvailable + tolerance) {
       setVisibleCount(count);
       return;
     }
 
-    const availableWithBtn = availableWidth - OVERFLOW_BTN_SPACE;
+    // When overflow is needed, main rail must make room for the overflow button.
+    // Measure the actual overflow button width when it’s rendered.
+    const overflowMeasureEl = overflowMeasureRef.current;
+    const overflowWidth = overflowMeasureEl
+      ? Math.ceil(overflowMeasureEl.getBoundingClientRect().width)
+      : 96;
+
+    const availableWithBtn = inlineAvailable - overflowWidth;
+
     let runningWidth = 0;
     let fitCount = 0;
-
     for (let i = 0; i < widths.length; i++) {
       const nextWidth = runningWidth + widths[i] + (i > 0 ? GAP : 0);
-      if (nextWidth <= availableWithBtn) {
+      if (nextWidth <= availableWithBtn + tolerance) {
         runningWidth = nextWidth;
         fitCount = i + 1;
       } else {
