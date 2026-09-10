@@ -325,8 +325,8 @@ export function ReferenceTab() {
     toast('Researcher opened', 'success');
   };
 
-  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 78, height: 78, gap: 2, alignContent: 'flex-start' };
-  const btn = { height: 26, display: 'inline-flex', alignItems: 'center', flexShrink: 0 };
+  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 82, height: 82, gap: 2, alignContent: 'flex-start' };
+  const btn = { height: 25, display: 'inline-flex', alignItems: 'center', flexShrink: 0 };
 
   return (
     <>

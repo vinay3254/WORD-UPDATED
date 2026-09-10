@@ -396,14 +396,16 @@ export function DesignTab() {
             <span style={{ fontSize: 8 }}>{CARET}</span>
           </button>
 
-          {/* Theme Preview Cards Strip — 2 visible with scroll */}
+          {/* Theme Preview Cards Strip — spreads out on desktop */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 4,
+              gap: 6,
               overflowX: 'auto',
-              maxWidth: 168,
+              maxWidth: 'min(900px, 50vw)',
+              minWidth: 168,
+              flex: '1 1 auto',
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
               padding: '1px 0',
@@ -593,9 +595,10 @@ export function DesignTab() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 4,
+            gap: 6,
             overflowX: 'auto',
-            maxWidth: 154,
+            maxWidth: 400,
+            flex: '0 1 auto',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             padding: '1px 0',

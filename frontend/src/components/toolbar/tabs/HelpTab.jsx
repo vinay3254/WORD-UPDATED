@@ -16,8 +16,8 @@ export function HelpTab() {
     }
   };
 
-  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 78, height: 78, gap: 2, alignContent: 'flex-start' };
-  const hbtn = { height: 26, display: 'inline-flex', alignItems: 'center', flexShrink: 0, whiteSpace: 'nowrap', fontSize: 11, padding: '0 6px' };
+  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 82, height: 82, gap: 2, alignContent: 'flex-start' };
+  const hbtn = { height: 25, display: 'inline-flex', alignItems: 'center', flexShrink: 0, whiteSpace: 'nowrap', fontSize: 11, padding: '0 6px' };
 
   return (
     <>

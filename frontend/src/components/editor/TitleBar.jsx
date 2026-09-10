@@ -84,7 +84,7 @@ export function TitleBar({ onSave }) {
           objectFit: 'contain',
           flexShrink: 0,
         }} />
-        <span style={{
+        <span className="titlebar-autosave-label" style={{
           fontSize: 12,
           color: 'var(--text-primary)',
           whiteSpace: 'nowrap',
@@ -127,28 +127,32 @@ export function TitleBar({ onSave }) {
         <Tooltip text="Redo" shortcut="Ctrl+Y">
           <button type="button" aria-label="Redo" onClick={handleRedo} disabled={!canRedo} style={{ ...quickBtn, ...(canRedo ? null : disabledBtn) }} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>↪</button>
         </Tooltip>
-        <Tooltip text="Open / Import Document" shortcut="Ctrl+O">
-          <button type="button" aria-label="Import DOCX" onClick={() => openDialog('importDocx')} style={quickBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>📥</button>
-        </Tooltip>
+        <div className="titlebar-import-btn">
+          <Tooltip text="Open / Import Document" shortcut="Ctrl+O">
+            <button type="button" aria-label="Import DOCX" onClick={() => openDialog('importDocx')} style={quickBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>📥</button>
+          </Tooltip>
+        </div>
       </div>
 
-      <div style={{
-        flex: '1 1 360px',
-        minWidth: 220,
+      <div className="titlebar-title-wrap" style={{
+        flex: '1 1 auto',
+        minWidth: 80,
+        maxWidth: 520,
         display: 'flex',
         justifyContent: 'center',
       }}>
         <div style={{
-          width: 'min(620px, 42vw)',
-          minWidth: 220,
+          width: '100%',
+          maxWidth: 520,
+          minWidth: 0,
           height: 28,
           background: 'var(--bg-elevated)',
           border: '1px solid var(--border)',
           borderRadius: 3,
           display: 'flex',
           alignItems: 'center',
-          padding: '0 10px',
-          gap: 7,
+          padding: '0 8px',
+          gap: 6,
         }}>
           <span aria-hidden="true" style={{ color: 'var(--gold)', fontSize: 12 }}>✎</span>
           <input
@@ -179,6 +183,7 @@ export function TitleBar({ onSave }) {
       }}>
         <div style={presenceWrap} title={`${collabStatus} - ${collaborators.length} collaborator(s)`}>
           <button
+            className="titlebar-collab-btn"
             type="button"
             aria-label={collaborators.length > 0 ? 'Open collaboration details' : 'Share document to start collaboration'}
             title={collaborators.length > 0 ? 'Open collaboration details' : 'Share document to start collaboration'}
@@ -209,8 +214,9 @@ export function TitleBar({ onSave }) {
           ) : null}
         </div>
         <NotificationBell />
-        <button type="button" onClick={() => openDialog('comments')} style={outlineBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>Comments</button>
+        <button className="titlebar-comments-btn" type="button" onClick={() => openDialog('comments')} style={outlineBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>Comments</button>
         <button
+          className="titlebar-editing-btn"
           type="button"
           style={flatTextBtn}
           onClick={() => openDialog('restrictEditing')}
@@ -221,6 +227,7 @@ export function TitleBar({ onSave }) {
           Editing ▾
         </button>
         <button
+          className="titlebar-share-btn"
           type="button"
           onClick={() => openDialog('shareDoc')}
           style={shareBtn}
@@ -230,6 +237,7 @@ export function TitleBar({ onSave }) {
           Share
         </button>
         <button
+          className="titlebar-logout-btn"
           type="button"
           title={`Logout${getStoredUser()?.name ? ` (${getStoredUser().name})` : ''}`}
           aria-label="Logout"

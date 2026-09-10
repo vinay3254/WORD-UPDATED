@@ -135,7 +135,7 @@ export function DrawTab() {
     toast(`Ink replay ${next + 1}/${drawings.length}`, 'success');
   };
 
-  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 78, height: 78, gap: 2, alignContent: 'flex-start' };
+  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 82, height: 82, gap: 2, alignContent: 'flex-start' };
 
   return (
     <>

@@ -779,14 +779,16 @@ export function HomeTab() {
             ◀
           </Button>
 
-          {/* Horizontally Scrollable Styles Strip */}
+          {/* Horizontally Scrollable Styles Strip — spreads out on desktop */}
           <div
             ref={stylesStripRef}
             style={{
               display: 'flex',
-              gap: 4,
+              gap: 6,
               overflowX: 'auto',
-              maxWidth: 172,
+              maxWidth: 'min(880px, 48vw)',
+              minWidth: 172,
+              flex: '1 1 auto',
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
               padding: '1px 0',

@@ -284,94 +284,174 @@ export function LayoutTab() {
     toast('Image/shape removed', 'success');
   };
 
-  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 78, height: 78, gap: 2, alignContent: 'flex-start' };
-  const rbtn = { height: 26, display: 'inline-flex', alignItems: 'center', fontSize: 11, padding: '0 6px', border: '1px solid transparent', background: 'transparent', borderRadius: 2, cursor: 'pointer', color: 'var(--ribbon-ink)', fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap', flexShrink: 0 };
+  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 82, height: 82, gap: 2, alignContent: 'flex-start' };
+  const rbtn = { height: 25, display: 'inline-flex', alignItems: 'center', fontSize: 11, padding: '0 6px', border: '1px solid transparent', background: 'transparent', borderRadius: 2, cursor: 'pointer', color: 'var(--ribbon-ink)', fontFamily: 'var(--font-ui)', whiteSpace: 'nowrap', flexShrink: 0 };
 
   return (
     <>
       <RibbonGroup label="Page Setup">
-        <div style={col}>
-          <Tooltip text="Margins">
-            <Select width={90} options={MARGIN_OPTIONS} value={pageMargin}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Margins */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 90 }}>
+            <span style={{ fontSize: 18, color: 'var(--gold)', lineHeight: 1 }}>📄</span>
+            <span style={{ fontSize: 9.5, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.04em' }}>MARGINS</span>
+            <Select
+              width={90}
+              options={MARGIN_OPTIONS}
+              value={pageMargin}
               onChange={(v) => { setPageMargin(v); apply({ margin: v }); toast(`Margins: ${v}`, 'success'); }}
-              title="Margins" />
-          </Tooltip>
-          <Tooltip text="Portrait">
-            <Button style={{ ...rbtn }} active={pageOrientation === 'portrait'}
-              onClick={() => { setPageOrientation('portrait'); apply({ orientation: 'portrait' }); }}>↕ Portrait</Button>
-          </Tooltip>
-          <Tooltip text="Landscape">
-            <Button style={{ ...rbtn }} active={pageOrientation === 'landscape'}
-              onClick={() => { setPageOrientation('landscape'); apply({ orientation: 'landscape' }); }}>↔ Landscape</Button>
-          </Tooltip>
-          <Tooltip text="Page Size">
-            <Select width={80} options={SIZE_OPTIONS} value={pageSize}
+              title="Page Margins"
+            />
+          </div>
+
+          {/* Orientation */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 92 }}>
+            <span style={{ fontSize: 18, color: 'var(--gold)', lineHeight: 1 }}>↕</span>
+            <span style={{ fontSize: 9.5, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.04em' }}>ORIENTATION</span>
+            <div style={{ display: 'flex', gap: 2 }}>
+              <Button
+                style={{ ...rbtn, height: 24, padding: '0 6px', fontSize: 10 }}
+                active={pageOrientation === 'portrait'}
+                onClick={() => { setPageOrientation('portrait'); apply({ orientation: 'portrait' }); toast('Orientation: Portrait', 'success'); }}
+                title="Portrait"
+              >
+                Port.
+              </Button>
+              <Button
+                style={{ ...rbtn, height: 24, padding: '0 6px', fontSize: 10 }}
+                active={pageOrientation === 'landscape'}
+                onClick={() => { setPageOrientation('landscape'); apply({ orientation: 'landscape' }); toast('Orientation: Landscape', 'success'); }}
+                title="Landscape"
+              >
+                Land.
+              </Button>
+            </div>
+          </div>
+
+          {/* Page Size */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 80 }}>
+            <span style={{ fontSize: 18, color: 'var(--gold)', lineHeight: 1 }}>📏</span>
+            <span style={{ fontSize: 9.5, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.04em' }}>SIZE</span>
+            <Select
+              width={80}
+              options={SIZE_OPTIONS}
+              value={pageSize}
               onChange={(v) => { setPageSize(v); apply({ size: v }); toast(`Size: ${v.toUpperCase()}`, 'success'); }}
-              title="Size" />
-          </Tooltip>
-          <Tooltip text="Columns">
-            <Select width={84} options={COLUMN_OPTIONS} value={String(pageColumns)}
+              title="Paper Size"
+            />
+          </div>
+
+          {/* Columns */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 80 }}>
+            <span style={{ fontSize: 18, color: 'var(--gold)', lineHeight: 1 }}>☵</span>
+            <span style={{ fontSize: 9.5, color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.04em' }}>COLUMNS</span>
+            <Select
+              width={80}
+              options={COLUMN_OPTIONS}
+              value={String(pageColumns)}
               onChange={(v) => { const c = Number(v); setPageColumns(c); apply({ columns: c }); toast(`Columns: ${v}`, 'success'); }}
-              title="Columns" />
-          </Tooltip>
-          <Tooltip text="Page Break (Ctrl+Enter)">
-            <Button style={{ ...rbtn }} onClick={insertBreak}>⊞ Breaks</Button>
-          </Tooltip>
-          <Tooltip text="Line Numbers">
-            <Button style={{ ...rbtn }} active={lineNumbersOn} onClick={toggleLineNumbers}># Lines</Button>
-          </Tooltip>
-          <Tooltip text="Auto Hyphenation">
-            <Button style={{ ...rbtn }} active={hyphenationOn} onClick={toggleHyphenation}>- Hyphen</Button>
-          </Tooltip>
+              title="Columns"
+            />
+          </div>
+
+          {/* Breaks, Line Numbers, Hyphenation */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, height: 82, justifyContent: 'space-between', paddingLeft: 6, borderLeft: '1px solid var(--border)' }}>
+            <Tooltip text="Insert Page Break (Ctrl+Enter)">
+              <Button style={{ ...rbtn, height: 24, justifyContent: 'flex-start', padding: '0 6px' }} onClick={insertBreak}>
+                ⊞ Breaks
+              </Button>
+            </Tooltip>
+            <Tooltip text="Toggle Line Numbers">
+              <Button style={{ ...rbtn, height: 24, justifyContent: 'flex-start', padding: '0 6px' }} active={lineNumbersOn} onClick={toggleLineNumbers}>
+                # Lines
+              </Button>
+            </Tooltip>
+            <Tooltip text="Toggle Automatic Hyphenation">
+              <Button style={{ ...rbtn, height: 24, justifyContent: 'flex-start', padding: '0 6px' }} active={hyphenationOn} onClick={toggleHyphenation}>
+                ― Hyphen
+              </Button>
+            </Tooltip>
+          </div>
         </div>
       </RibbonGroup>
 
       <RibbonGroup label="Paragraph">
-        <div style={col}>
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)', height: 26, display: 'inline-flex', alignItems: 'center' }}>Left:</span>
-          <Select width={72}
-            value={String(indentLeftCm)}
-            options={INDENT_OPTIONS.map((v) => ({ value: String(v), label: `${v} cm` }))}
-            onChange={(v) => { const n = Number(v); setIndentLeftCm(n); applyParagraphLayout({ indentLeftCm: n }); }}
-            title="Indent Left"
-          />
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)', height: 26, display: 'inline-flex', alignItems: 'center' }}>Right:</span>
-          <Select width={72}
-            value={String(indentRightCm)}
-            options={INDENT_OPTIONS.map((v) => ({ value: String(v), label: `${v} cm` }))}
-            onChange={(v) => { const n = Number(v); setIndentRightCm(n); applyParagraphLayout({ indentRightCm: n }); }}
-            title="Indent Right"
-          />
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)', height: 26, display: 'inline-flex', alignItems: 'center' }}>Before:</span>
-          <Select width={72}
-            value={String(spacingBeforePt)}
-            options={SPACING_OPTIONS.map((v) => ({ value: String(v), label: `${v} pt` }))}
-            onChange={(v) => { const n = Number(v); setSpacingBeforePt(n); applyParagraphLayout({ spacingBeforePt: n }); }}
-            title="Spacing Before"
-          />
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)', height: 26, display: 'inline-flex', alignItems: 'center' }}>After:</span>
-          <Select width={72}
-            value={String(spacingAfterPt)}
-            options={SPACING_OPTIONS.map((v) => ({ value: String(v), label: `${v} pt` }))}
-            onChange={(v) => { const n = Number(v); setSpacingAfterPt(n); applyParagraphLayout({ spacingAfterPt: n }); }}
-            title="Spacing After"
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {/* Indent column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, height: 80, justifyContent: 'center' }}>
+            <div style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span>⇤</span>
+              <span>INDENT</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, color: 'var(--text-secondary)', width: 34 }}>Left:</span>
+              <Select
+                width={74}
+                value={String(indentLeftCm)}
+                options={INDENT_OPTIONS.map((v) => ({ value: String(v), label: `${v} cm` }))}
+                onChange={(v) => { const n = Number(v); setIndentLeftCm(n); applyParagraphLayout({ indentLeftCm: n }); }}
+                title="Indent Left"
+              />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, color: 'var(--text-secondary)', width: 34 }}>Right:</span>
+              <Select
+                width={74}
+                value={String(indentRightCm)}
+                options={INDENT_OPTIONS.map((v) => ({ value: String(v), label: `${v} cm` }))}
+                onChange={(v) => { const n = Number(v); setIndentRightCm(n); applyParagraphLayout({ indentRightCm: n }); }}
+                title="Indent Right"
+              />
+            </div>
+          </div>
+
+          {/* Spacing column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, height: 80, justifyContent: 'center', paddingLeft: 10, borderLeft: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span>⇕</span>
+              <span>SPACING</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, color: 'var(--text-secondary)', width: 42 }}>Before:</span>
+              <Select
+                width={74}
+                value={String(spacingBeforePt)}
+                options={SPACING_OPTIONS.map((v) => ({ value: String(v), label: `${v} pt` }))}
+                onChange={(v) => { const n = Number(v); setSpacingBeforePt(n); applyParagraphLayout({ spacingBeforePt: n }); }}
+                title="Spacing Before"
+              />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 11, color: 'var(--text-secondary)', width: 42 }}>After:</span>
+              <Select
+                width={74}
+                value={String(spacingAfterPt)}
+                options={SPACING_OPTIONS.map((v) => ({ value: String(v), label: `${v} pt` }))}
+                onChange={(v) => { const n = Number(v); setSpacingAfterPt(n); applyParagraphLayout({ spacingAfterPt: n }); }}
+                title="Spacing After"
+              />
+            </div>
+          </div>
         </div>
       </RibbonGroup>
 
       <RibbonGroup label="Arrange">
-        <div style={col}>
-          <Tooltip text="Position"><Button style={rbtn} onClick={() => alignImage('center')}>⊞ Position</Button></Tooltip>
-          <Tooltip text="Wrap Text"><Button style={rbtn} onClick={wrapText}>☰ Wrap</Button></Tooltip>
-          <Tooltip text="Increase Size"><Button style={rbtn} onClick={() => resizeSelectedImage('up')}>＋ Size</Button></Tooltip>
-          <Tooltip text="Decrease Size"><Button style={rbtn} onClick={() => resizeSelectedImage('down')}>－ Size</Button></Tooltip>
-          <Tooltip text="Remove Image/Shape"><Button style={rbtn} onClick={removeSelectedImage}>🗑 Remove</Button></Tooltip>
-          <Tooltip text="Bring Forward"><Button style={rbtn} onClick={() => layerImage('up')}>↑ Forward</Button></Tooltip>
-          <Tooltip text="Send Backward"><Button style={rbtn} onClick={() => layerImage('down')}>↓ Back</Button></Tooltip>
-          <Tooltip text="Selection Pane"><Button style={rbtn} active={sidebarOpen} onClick={() => { toggleSidebar(); }}>⌖ Pane</Button></Tooltip>
-          <Tooltip text="Align Left"><Button style={rbtn} onClick={() => alignImage('left')}>⇤ Align</Button></Tooltip>
-          <Tooltip text="Group"><Button style={rbtn} onClick={() => toast('Grouping is limited in this editor', 'info')}>⊞ Group</Button></Tooltip>
-          <Tooltip text="Rotate"><Button style={rbtn} onClick={rotateImage}>↻ Rotate</Button></Tooltip>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, height: 82, justifyContent: 'space-between' }}>
+            <Tooltip text="Position on page"><Button style={rbtn} onClick={() => alignImage('center')}>⊞ Position</Button></Tooltip>
+            <Tooltip text="Wrap Text around image/shape"><Button style={rbtn} onClick={wrapText}>☰ Wrap Text</Button></Tooltip>
+            <Tooltip text="Selection Pane"><Button style={rbtn} active={sidebarOpen} onClick={() => toggleSidebar()}>⌖ Selection Pane</Button></Tooltip>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, height: 82, justifyContent: 'space-between' }}>
+            <Tooltip text="Bring Forward"><Button style={rbtn} onClick={() => layerImage('up')}>↑ Forward</Button></Tooltip>
+            <Tooltip text="Send Backward"><Button style={rbtn} onClick={() => layerImage('down')}>↓ Backward</Button></Tooltip>
+            <Tooltip text="Align Object"><Button style={rbtn} onClick={() => alignImage('left')}>⇤ Align Left</Button></Tooltip>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, height: 82, justifyContent: 'space-between' }}>
+            <Tooltip text="Rotate 90 degrees"><Button style={rbtn} onClick={rotateImage}>↻ Rotate</Button></Tooltip>
+            <Tooltip text="Increase Size"><Button style={rbtn} onClick={() => resizeSelectedImage('up')}>＋ Enlarge</Button></Tooltip>
+            <Tooltip text="Decrease Size"><Button style={rbtn} onClick={() => resizeSelectedImage('down')}>－ Shrink</Button></Tooltip>
+          </div>
         </div>
       </RibbonGroup>
     </>
@@ -760,8 +840,8 @@ export function ReviewTab() {
 
   const handleFilterMarkup = (value) => handleMarkupMode(value);
 
-  const rBtn = { height: 26, fontSize: 11, padding: '0 6px', justifyContent: 'flex-start', whiteSpace: 'nowrap', flexShrink: 0 };
-  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 78, height: 78, gap: 2, alignContent: 'flex-start' };
+  const rBtn = { height: 25, fontSize: 11, padding: '0 6px', justifyContent: 'flex-start', whiteSpace: 'nowrap', flexShrink: 0 };
+  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 82, height: 82, gap: 2, alignContent: 'flex-start' };
 
   return (
     <>
@@ -920,8 +1000,8 @@ export function ViewTab() {
   return (
     <>
       {(() => {
-        const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 78, height: 78, gap: 2, alignContent: 'flex-start' };
-        const vbtn = { height: 26, display: 'inline-flex', alignItems: 'center', fontSize: 11, padding: '0 6px', flexShrink: 0, whiteSpace: 'nowrap' };
+        const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 82, height: 82, gap: 2, alignContent: 'flex-start' };
+        const vbtn = { height: 25, display: 'inline-flex', alignItems: 'center', fontSize: 11, padding: '0 6px', flexShrink: 0, whiteSpace: 'nowrap' };
         return (
           <>
             <RibbonGroup label="Views">

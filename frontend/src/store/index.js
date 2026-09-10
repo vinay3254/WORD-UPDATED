@@ -380,7 +380,7 @@ export const useUIStore = create((set) => ({
     }
     set({ autoSaveEnabled: !!enabled });
   },
-  sidebarOpen: true,
+  sidebarOpen: typeof window !== 'undefined' ? window.innerWidth > 900 : true,
   fullscreen: false,
   ribbonCollapsed: false,
   zoom: 100,
@@ -400,7 +400,7 @@ export const useUIStore = create((set) => ({
   drawOpacity: 0.4,
   watermarkText: '',
 
-  copilotOpen: true,
+  copilotOpen: typeof window !== 'undefined' ? window.innerWidth > 1024 : true,
   toggleCopilot: () => set((s) => ({ copilotOpen: !s.copilotOpen })),
   setCopilotOpen: (open) => set({ copilotOpen: !!open }),
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),

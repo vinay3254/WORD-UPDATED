@@ -180,8 +180,8 @@ export function MailingsTab() {
     toast('Print preview opened for current recipient', 'success');
   });
 
-  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 78, height: 78, gap: 2, alignContent: 'flex-start' };
-  const mbtn = { height: 26, display: 'inline-flex', alignItems: 'center', flexShrink: 0, whiteSpace: 'nowrap', fontSize: 11, padding: '0 6px' };
+  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 82, height: 82, gap: 2, alignContent: 'flex-start' };
+  const mbtn = { height: 25, display: 'inline-flex', alignItems: 'center', flexShrink: 0, whiteSpace: 'nowrap', fontSize: 11, padding: '0 6px' };
 
   return (
     <>

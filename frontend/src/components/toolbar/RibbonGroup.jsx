@@ -20,10 +20,10 @@ export function RibbonGroup({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         borderRight: noDivider ? 'none' : '1px solid var(--ribbon-divider)',
-        padding: '3px 6px 2px 6px',
+        padding: '3px 12px 3px 12px',
         margin: 0,
         height: '100%',
         minWidth: 'fit-content',
@@ -31,10 +31,11 @@ export function RibbonGroup({
         boxSizing: 'border-box',
         position: 'relative',
         userSelect: 'none',
+        gap: '2px',
         ...style,
       }}
     >
-      {/* 3-Row Icon & Control Area — flex-column+wrap so items fill DOWN 3 rows then wrap into next column */}
+      {/* 3-Row Icon & Control Area */}
       <div
         className="ribbon-group-content"
         style={
@@ -42,18 +43,18 @@ export function RibbonGroup({
             ? {
                 display: 'flex',
                 alignItems: 'center',
-                height: 78,
+                height: 82,
+                maxHeight: 82,
                 width: '100%',
+                flexShrink: 0,
                 ...contentStyle,
               }
             : {
                 display: 'flex',
-                flexDirection: 'column',
-                flexWrap: 'wrap',
-                alignContent: 'flex-start',
-                gap: '2px 4px',
-                height: 78,
-                maxHeight: 78,
+                alignItems: 'center',
+                height: 82,
+                maxHeight: 82,
+                flexShrink: 0,
                 overflow: 'visible',
                 ...contentStyle,
               }
@@ -70,8 +71,7 @@ export function RibbonGroup({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingTop: 2,
-          paddingBottom: 2,
+          marginTop: 'auto',
           height: 16,
           boxSizing: 'border-box',
         }}
