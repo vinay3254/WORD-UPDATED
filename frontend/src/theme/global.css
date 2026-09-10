@@ -391,8 +391,7 @@ body {
 
 /* ── 3-Row Ribbon Group Styling (flex-column + wrap model) ── */
 /* Each direct child of .ribbon-group-content is exactly 26px tall.
-   3 children × 26px = 78px = the full column height → 4th child wraps to next column.
-   Exception: wrappers marked data-col, data-hero, or data-stacked opt out of this cap. */
+   3 children × 26px = 78px = the full column height → 4th child wraps to next column. */
 .ribbon-group-content > * {
   height: 26px;
   max-height: 26px;
@@ -440,40 +439,6 @@ body {
   height: 24px;
   display: flex;
   align-items: center;
-}
-/* data-col: multi-row flex-wrap column used by Draw/Insert/Design gallery groups.
-   These divs are height:78 and wrap multiple 26px-tall buttons into columns.
-   They must not be capped at 26px. */
-.ribbon-group-content > [data-col="true"] {
-  height: 78px !important;
-  max-height: 78px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  flex-wrap: wrap !important;
-  align-content: flex-start !important;
-  gap: 2px 4px !important;
-  overflow: visible !important;
-  white-space: normal !important;
-}
-/* Buttons inside a data-col wrapper — restore the 26px per-button height */
-.ribbon-group-content > [data-col="true"] > *,
-.ribbon-group-content > [data-col="true"] > * > button,
-.ribbon-group-content > [data-col="true"] > button {
-  height: 26px;
-  max-height: 26px;
-  flex-shrink: 0;
-  box-sizing: border-box;
-}
-/* data-gallery: horizontal scroll gallery (Design theme tiles, Table Styles).
-   These take full 78px height and manage their own internal scroll. */
-.ribbon-group-content > [data-gallery="true"] {
-  height: 78px !important;
-  max-height: 78px !important;
-  display: flex !important;
-  align-items: center !important;
-  overflow: visible !important;
-  white-space: normal !important;
-  flex-shrink: 0 !important;
 }
 
 ::selection { background: rgba(212,175,55,0.28); color: inherit; }

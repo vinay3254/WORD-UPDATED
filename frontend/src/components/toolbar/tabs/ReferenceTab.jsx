@@ -331,7 +331,7 @@ export function ReferenceTab() {
   return (
     <>
       <RibbonGroup label="Table of Contents">
-        <div data-col="true" style={col}>
+        <div style={col}>
           <Tooltip text="Table of Contents"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={insertToc}>≡ Contents</Button></Tooltip>
           <Tooltip text="Add Text"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={addTextToToc}>+ Add Text</Button></Tooltip>
           <Tooltip text="Update Table"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={updateToc}>↻ Update</Button></Tooltip>
@@ -339,7 +339,7 @@ export function ReferenceTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Footnotes">
-        <div data-col="true" style={col}>
+        <div style={col}>
           <Tooltip text="Insert Footnote" shortcut="Alt+Ctrl+F"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={() => insertHtml('<p><sup>[1]</sup> Footnote: Footnote text</p>')}>¹ Footnote</Button></Tooltip>
           <Tooltip text="Insert Endnote" shortcut="Alt+Ctrl+D"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={() => insertHtml('<p><sup>[a]</sup> Endnote: Endnote text</p>')}>¹ Endnote</Button></Tooltip>
           <Tooltip text="Next Footnote"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={jumpToNextFootnote}>→ Next</Button></Tooltip>
@@ -348,7 +348,7 @@ export function ReferenceTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Citations & Bibliography">
-        <div data-col="true" style={col}>
+        <div style={col}>
           <Tooltip text="Insert Citation"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={insertCitation}>❝ Citation</Button></Tooltip>
           <Tooltip text="Manage Sources"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={manageSources}>📚 Sources</Button></Tooltip>
           <Tooltip text="Style"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={() => openDialog('insertCitation')}>APA Style</Button></Tooltip>
@@ -358,7 +358,7 @@ export function ReferenceTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Captions">
-        <div data-col="true" style={col}>
+        <div style={col}>
           <Tooltip text="Insert Caption (Figure or Table)"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={insertCaption}>🏷 Caption</Button></Tooltip>
           <Tooltip text="Insert Table of Figures"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={insertTableOfFigures}>≡ Figures</Button></Tooltip>
           <Tooltip text="Insert Table of Tables"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={insertTableOfTables}>≡ Tables</Button></Tooltip>
@@ -371,7 +371,7 @@ export function ReferenceTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Index">
-        <div data-col="true" style={col}>
+        <div style={col}>
           <Tooltip text="Mark Selected Text for Index"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={markIndexEntry}>✎ Mark Entry</Button></Tooltip>
           <Tooltip text="Insert Alphabetical Index (A-Z)"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={insertIndex}>≡ Index</Button></Tooltip>
           <Tooltip text="Update Index"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={updateIndex}>↻ Update</Button></Tooltip>
@@ -379,7 +379,7 @@ export function ReferenceTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Table of Authorities">
-        <div data-col="true" style={col}>
+        <div style={col}>
           <Tooltip text="Mark Citation"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={markCitation}>✎ Mark</Button></Tooltip>
           <Tooltip text="Insert Table of Authorities"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={insertAuthorities}>≡ Authorities</Button></Tooltip>
           <Tooltip text="Update Table"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={updateAuthorities}>↻ Update</Button></Tooltip>
@@ -387,7 +387,7 @@ export function ReferenceTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Research">
-        <div data-col="true" style={col}>
+        <div style={col}>
           <Tooltip text="Researcher"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={openResearcher}>🔬 Researcher</Button></Tooltip>
           <Tooltip text="Smart Lookup"><Button style={btn} onMouseDown={keepSelectionOnMouseDown} onClick={smartLookup}>🔍 Lookup</Button></Tooltip>
         </div>

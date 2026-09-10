@@ -352,7 +352,7 @@ export function DesignTab() {
     <>
       {/* ── Group 1: Document Formatting (Themes) ── */}
       <RibbonGroup label="Document Formatting">
-        <div data-gallery="true" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button
             onClick={() => {
               const next = ((THEMES.findIndex(t => t.accent === design.accent) + 1) % THEMES.length);
@@ -438,9 +438,6 @@ export function DesignTab() {
                       color: theme.accent,
                       lineHeight: 1,
                       fontWeight: 400,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
                     }}
                   >
                     {theme.name}
@@ -593,7 +590,6 @@ export function DesignTab() {
       {/* ── Table Styles Gallery ── */}
       <RibbonGroup label="Table Styles">
         <div
-          data-gallery="true"
           style={{
             display: 'flex',
             alignItems: 'center',
