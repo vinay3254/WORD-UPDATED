@@ -65,7 +65,9 @@ export function Ribbon() {
     // Measure each group’s rendered width (avoid cached widths).
     // Note: we include the label/caption row in width via the group’s actual box.
     const GAP = Number.parseFloat(window.getComputedStyle(content).gap) || 6;
-    const tolerance = 0.5;
+    // Safety margin: trigger overflow BEFORE any group reaches the edge.
+    // Negative tolerance means we require 12px of breathing room — no group ever clips.
+    const SAFETY = 12;
 
     const widths = children.map((c) => {
       const rect = c.getBoundingClientRect();
@@ -77,10 +79,10 @@ export function Ribbon() {
 
     // Inline rail width is what the groups currently have when overflow button
     // is NOT taking space (this is the gap we’re trying to fill).
-    const inlineAvailable = Math.floor(content.getBoundingClientRect().width);
+    const inlineAvailable = Math.floor(content.getBoundingClientRect().width) - SAFETY;
 
     const requiredInlineWidth = widths.reduce((sum, w) => sum + w, 0) + (count - 1) * GAP;
-    if (requiredInlineWidth <= inlineAvailable + tolerance) {
+    if (requiredInlineWidth <= inlineAvailable) {
       setVisibleCount(count);
       return;
     }
@@ -98,7 +100,7 @@ export function Ribbon() {
     let fitCount = 0;
     for (let i = 0; i < widths.length; i++) {
       const nextWidth = runningWidth + widths[i] + (i > 0 ? GAP : 0);
-      if (nextWidth <= availableWithBtn + tolerance) {
+      if (nextWidth <= availableWithBtn) {
         runningWidth = nextWidth;
         fitCount = i + 1;
       } else {

@@ -389,13 +389,19 @@ body {
   height: 0 !important;
 }
 
-/* ── 3-Row Ribbon Group Styling ── */
+/* ── 3-Row Ribbon Group Styling (flex-column + wrap model) ── */
+/* Each direct child of .ribbon-group-content is exactly 26px tall.
+   3 children × 26px = 78px = the full column height → 4th child wraps to next column. */
 .ribbon-group-content > * {
   height: 26px;
+  max-height: 26px;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
+  white-space: nowrap;
 }
+/* Buttons inside Tooltip wrappers */
 .ribbon-group-content > * > button,
 .ribbon-group-content > button {
   height: 24px;
@@ -404,9 +410,13 @@ body {
   white-space: nowrap;
   box-sizing: border-box;
 }
-.ribbon-group-content [data-hero="true"] {
-  grid-row: 1 / -1 !important;
-  height: 82px !important;
+/* Hero buttons span all 3 rows — must opt out of 26px cap */
+.ribbon-group-content > [data-hero="true"],
+.ribbon-group-content > [data-hero="true"] > span {
+  height: 78px !important;
+  max-height: 78px !important;
+  align-self: stretch;
+  align-items: center;
 }
 .ribbon-group-content [data-hero="true"] button,
 .ribbon-group-content [data-hero="true"] > div > button {
@@ -415,20 +425,21 @@ body {
   justify-content: center !important;
   gap: 2px !important;
 }
+/* data-stacked: already a manually arranged 3-row column — opt out of 26px cap */
 .ribbon-group-content > [data-stacked="true"] {
-  grid-row: 1 / -1 !important;
-  height: 82px !important;
+  height: 78px !important;
+  max-height: 78px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
   align-items: stretch !important;
+  flex-shrink: 0;
 }
 .ribbon-group-content > [data-stacked="true"] > * {
   height: 24px;
   display: flex;
   align-items: center;
 }
-
 
 ::selection { background: rgba(212,175,55,0.28); color: inherit; }
 :focus-visible { outline: 1.5px solid var(--gold); outline-offset: 2px; }

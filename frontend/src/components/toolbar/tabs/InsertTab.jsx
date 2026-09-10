@@ -177,97 +177,119 @@ export function InsertTab() {
 
   const label = (t, dd = false) => <span style={{ fontSize: 11, lineHeight: 1.05, textAlign: 'center' }}>{t}{dd ? ' ▾' : ''}</span>;
 
+  const col = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 78, height: 78, gap: 2, alignContent: 'flex-start' };
+  const ibtn = { ...itemBtn, height: 26 };
+
   return (
     <>
       <RibbonGroup label="Pages">
-        <Tooltip text="Page Break" shortcut="Ctrl+Enter">
-          <button data-hero="true" style={heroBtn} onClick={() => run(() => editor.chain().focus().insertPageBreak().run())}>
-            {iconBox('page')}
-            {label('Page Break')}
-          </button>
-        </Tooltip>
+        <span data-hero="true" style={{ display: 'inline-flex', height: 78, alignItems: 'stretch' }}>
+          <Tooltip text="Page Break" shortcut="Ctrl+Enter">
+            <button data-hero="true" style={heroBtn} onClick={() => run(() => editor.chain().focus().insertPageBreak().run())}>
+              {iconBox('page')}
+              {label('Page Break')}
+            </button>
+          </Tooltip>
+        </span>
       </RibbonGroup>
 
       <RibbonGroup label="Tables">
-        <button data-hero="true" style={heroBtn} onClick={() => openDialog('insertTable')}>
-          {iconBox('table')}
-          {label('Table', true)}
-        </button>
+        <span data-hero="true" style={{ display: 'inline-flex', height: 78, alignItems: 'stretch' }}>
+          <button data-hero="true" style={heroBtn} onClick={() => openDialog('insertTable')}>
+            {iconBox('table')}
+            {label('Table', true)}
+          </button>
+        </span>
       </RibbonGroup>
 
       <RibbonGroup label="Illustrations">
-        <button style={itemBtn} onClick={() => openDialog('insertImage')}>{iconBox('picture')}{label('Pictures', true)}</button>
-        <button style={itemBtn} onClick={() => openDialog('insertShape')}>{iconBox('picture')}{label('Shapes', true)}</button>
-        <button style={itemBtn} onClick={() => openDialog('insertChart')}>{iconBox('chart')}{label('Chart', true)}</button>
-        <button style={itemBtn} onClick={() => openDialog('screenshot')}>{iconBox('picture')}{label('Screenshot', true)}</button>
+        <div style={col}>
+          <button style={ibtn} onClick={() => openDialog('insertImage')}>{iconBox('picture')}{label('Pictures', true)}</button>
+          <button style={ibtn} onClick={() => openDialog('insertShape')}>{iconBox('picture')}{label('Shapes', true)}</button>
+          <button style={ibtn} onClick={() => openDialog('insertChart')}>{iconBox('chart')}{label('Chart', true)}</button>
+          <button style={ibtn} onClick={() => openDialog('screenshot')}>{iconBox('picture')}{label('Screenshot', true)}</button>
+        </div>
       </RibbonGroup>
 
       <RibbonGroup label="Links">
-        <button data-hero="true" style={heroBtn} onClick={() => openDialog('insertLink')}>
-          {iconBox('link')}
-          {label('Link')}
-        </button>
+        <span data-hero="true" style={{ display: 'inline-flex', height: 78, alignItems: 'stretch' }}>
+          <button data-hero="true" style={heroBtn} onClick={() => openDialog('insertLink')}>
+            {iconBox('link')}
+            {label('Link')}
+          </button>
+        </span>
       </RibbonGroup>
 
       <RibbonGroup label="Comments">
-        <Tooltip text="Comment" shortcut="Ctrl+Alt+M">
-          <button data-hero="true" style={heroBtn} onClick={() => openDialog('comments')}>
-            {iconBox('picture')}
-            {label('Comment')}
-          </button>
-        </Tooltip>
+        <span data-hero="true" style={{ display: 'inline-flex', height: 78, alignItems: 'stretch' }}>
+          <Tooltip text="Comment" shortcut="Ctrl+Alt+M">
+            <button data-hero="true" style={heroBtn} onClick={() => openDialog('comments')}>
+              {iconBox('picture')}
+              {label('Comment')}
+            </button>
+          </Tooltip>
+        </span>
       </RibbonGroup>
 
       <RibbonGroup label="Header & Footer">
-        <button style={itemBtn} onClick={() => openHeaderFooter('header')}>{iconBox('picture')}{label('Header', true)}</button>
-        <button style={itemBtn} onClick={() => openHeaderFooter('footer')}>{iconBox('picture')}{label('Footer', true)}</button>
-        <button style={itemBtn} onClick={() => openHeaderFooter('pagenum')}>{iconBox('picture')}{label('Page Number', true)}</button>
+        <div style={col}>
+          <button style={ibtn} onClick={() => openHeaderFooter('header')}>{iconBox('picture')}{label('Header', true)}</button>
+          <button style={ibtn} onClick={() => openHeaderFooter('footer')}>{iconBox('picture')}{label('Footer', true)}</button>
+          <button style={ibtn} onClick={() => openHeaderFooter('pagenum')}>{iconBox('picture')}{label('Page Number', true)}</button>
+        </div>
       </RibbonGroup>
 
       <RibbonGroup label="Text">
-        <button
-          style={itemBtn}
-          onClick={() => {
-            if (!editor) return;
-            const boxId = `textbox-${Date.now()}`;
-            run(() => {
-              editor
-                .chain()
-                .focus()
-                .insertContent(`<div id="${boxId}" style="border:2px solid #4472c4;border-radius:4px;padding:12px;margin:8px 0;background:#f0f7ff;cursor:text;min-width:200px;min-height:60px;" contenteditable="true" data-textbox="true"><span style="color:#999;font-style:italic;">Click to type</span></div>`)
-                .run();
-            });
-            toast('Text box inserted', 'success');
-          }}
-        >
-          {iconBox('picture')}{label('Text Box', true)}
-        </button>
-        <button style={itemBtn} onClick={() => openDialog('buildingBlocks')}>{iconBox('picture')}{label('Quick Parts', true)}</button>
-        <button style={itemBtn} onClick={insertSignatureField}>{iconBox('picture')}{label('Signature Field')}</button>
-        <button style={itemBtn} onClick={() => openDialog('wordArt')}>{iconBox('picture')}{label('WordArt', true)}</button>
-        <button style={itemBtn} onClick={insertDropCap}>{iconBox('picture')}{label('Drop Cap', true)}</button>
-        <button style={itemBtn} onClick={() => insertHtml(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}>{iconBox('picture')}{label('Date & Time', true)}</button>
+        <div style={col}>
+          <button
+            style={ibtn}
+            onClick={() => {
+              if (!editor) return;
+              const boxId = `textbox-${Date.now()}`;
+              run(() => {
+                editor
+                  .chain()
+                  .focus()
+                  .insertContent(`<div id="${boxId}" style="border:2px solid #4472c4;border-radius:4px;padding:12px;margin:8px 0;background:#f0f7ff;cursor:text;min-width:200px;min-height:60px;" contenteditable="true" data-textbox="true"><span style="color:#999;font-style:italic;">Click to type</span></div>`)
+                  .run();
+              });
+              toast('Text box inserted', 'success');
+            }}
+          >
+            {iconBox('picture')}{label('Text Box', true)}
+          </button>
+          <button style={ibtn} onClick={() => openDialog('buildingBlocks')}>{iconBox('picture')}{label('Quick Parts', true)}</button>
+          <button style={ibtn} onClick={insertSignatureField}>{iconBox('picture')}{label('Sig Field')}</button>
+          <button style={ibtn} onClick={() => openDialog('wordArt')}>{iconBox('picture')}{label('WordArt', true)}</button>
+          <button style={ibtn} onClick={insertDropCap}>{iconBox('picture')}{label('Drop Cap', true)}</button>
+          <button style={ibtn} onClick={() => insertHtml(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}>{iconBox('picture')}{label('Date & Time', true)}</button>
+        </div>
       </RibbonGroup>
 
       <RibbonGroup label="Symbols">
-        <button style={itemBtn} onClick={() => openDialog('equation')}>{iconBox('picture')}{label('Equation', true)}</button>
-        <button style={itemBtn} onClick={() => openDialog('insertSymbol')}>{iconBox('picture')}{label('Symbol', true)}</button>
+        <div style={col}>
+          <button style={ibtn} onClick={() => openDialog('equation')}>{iconBox('picture')}{label('Equation', true)}</button>
+          <button style={ibtn} onClick={() => openDialog('insertSymbol')}>{iconBox('picture')}{label('Symbol', true)}</button>
+        </div>
       </RibbonGroup>
 
       <RibbonGroup label="Digital Signatures" noDivider>
-        <button style={itemBtn} onClick={() => openDialog('digitalSignature')}>
-          {iconBox('signature')}
-          {label('Digital Sign')}
-        </button>
-        <button style={itemBtn} onClick={insertSignatureField}>
-          {iconBox('picture')}
-          {label('Sig Field')}
-        </button>
-        <button style={itemBtn} onClick={insertEsignFields}>
-          {iconBox('table')}
-          {label('eSign Table')}
-        </button>
+        <div style={col}>
+          <button style={ibtn} onClick={() => openDialog('digitalSignature')}>
+            {iconBox('signature')}
+            {label('Digital Sign')}
+          </button>
+          <button style={ibtn} onClick={insertSignatureField}>
+            {iconBox('picture')}
+            {label('Sig Field')}
+          </button>
+          <button style={ibtn} onClick={insertEsignFields}>
+            {iconBox('table')}
+            {label('eSign Table')}
+          </button>
+        </div>
       </RibbonGroup>
     </>
   );
 }
+

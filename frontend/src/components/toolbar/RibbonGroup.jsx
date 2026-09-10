@@ -34,7 +34,7 @@ export function RibbonGroup({
         ...style,
       }}
     >
-      {/* 3-Row Icon & Control Area */}
+      {/* 3-Row Icon & Control Area — flex-column+wrap so items fill DOWN 3 rows then wrap into next column */}
       <div
         className="ribbon-group-content"
         style={
@@ -42,20 +42,19 @@ export function RibbonGroup({
             ? {
                 display: 'flex',
                 alignItems: 'center',
-                height: 84,
+                height: 78,
                 width: '100%',
                 ...contentStyle,
               }
             : {
-                display: 'grid',
-                gridTemplateRows: 'repeat(3, 26px)',
-                gridAutoFlow: 'column',
-                gridAutoColumns: 'max-content',
+                display: 'flex',
+                flexDirection: 'column',
+                flexWrap: 'wrap',
+                alignContent: 'flex-start',
                 gap: '2px 4px',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: 84,
-                width: '100%',
+                height: 78,
+                maxHeight: 78,
+                overflow: 'visible',
                 ...contentStyle,
               }
         }
