@@ -203,7 +203,7 @@ export function InsertTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Illustrations">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <button style={ibtn} onClick={() => openDialog('insertImage')}>{iconBox('picture')}{label('Pictures', true)}</button>
           <button style={ibtn} onClick={() => openDialog('insertShape')}>{iconBox('picture')}{label('Shapes', true)}</button>
           <button style={ibtn} onClick={() => openDialog('insertChart')}>{iconBox('chart')}{label('Chart', true)}</button>
@@ -232,7 +232,7 @@ export function InsertTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Header & Footer">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <button style={ibtn} onClick={() => openHeaderFooter('header')}>{iconBox('picture')}{label('Header', true)}</button>
           <button style={ibtn} onClick={() => openHeaderFooter('footer')}>{iconBox('picture')}{label('Footer', true)}</button>
           <button style={ibtn} onClick={() => openHeaderFooter('pagenum')}>{iconBox('picture')}{label('Page Number', true)}</button>
@@ -240,7 +240,7 @@ export function InsertTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Text">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <button
             style={ibtn}
             onClick={() => {
@@ -267,14 +267,14 @@ export function InsertTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Symbols">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <button style={ibtn} onClick={() => openDialog('equation')}>{iconBox('picture')}{label('Equation', true)}</button>
           <button style={ibtn} onClick={() => openDialog('insertSymbol')}>{iconBox('picture')}{label('Symbol', true)}</button>
         </div>
       </RibbonGroup>
 
       <RibbonGroup label="Digital Signatures" noDivider>
-        <div style={col}>
+        <div data-col="true" style={col}>
           <button style={ibtn} onClick={() => openDialog('digitalSignature')}>
             {iconBox('signature')}
             {label('Digital Sign')}

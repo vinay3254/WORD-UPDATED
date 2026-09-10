@@ -290,7 +290,7 @@ export function LayoutTab() {
   return (
     <>
       <RibbonGroup label="Page Setup">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Margins">
             <Select width={90} options={MARGIN_OPTIONS} value={pageMargin}
               onChange={(v) => { setPageMargin(v); apply({ margin: v }); toast(`Margins: ${v}`, 'success'); }}
@@ -327,7 +327,7 @@ export function LayoutTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Paragraph">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)', height: 26, display: 'inline-flex', alignItems: 'center' }}>Left:</span>
           <Select width={72}
             value={String(indentLeftCm)}
@@ -360,7 +360,7 @@ export function LayoutTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Arrange">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Position"><Button style={rbtn} onClick={() => alignImage('center')}>⊞ Position</Button></Tooltip>
           <Tooltip text="Wrap Text"><Button style={rbtn} onClick={wrapText}>☰ Wrap</Button></Tooltip>
           <Tooltip text="Increase Size"><Button style={rbtn} onClick={() => resizeSelectedImage('up')}>＋ Size</Button></Tooltip>
@@ -766,7 +766,7 @@ export function ReviewTab() {
   return (
     <>
       <RibbonGroup label="Proofing">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Spelling & Grammar" shortcut="F7">
             <Button style={rBtn} active={spellCheck} onClick={handleSpellCheck}>ABC✓ Spell</Button>
           </Tooltip>
@@ -781,14 +781,14 @@ export function ReviewTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Language">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Translate"><Button style={rBtn} onClick={translateSelection}>🌐 Translate</Button></Tooltip>
           <Tooltip text="Language"><Button style={rBtn} onClick={handleLanguage}>🗣 Language</Button></Tooltip>
         </div>
       </RibbonGroup>
 
       <RibbonGroup label="Comments">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="New Comment" shortcut="Ctrl+Alt+M"><Button style={rBtn} onMouseDown={(e) => e.preventDefault()} onClick={handleNewComment}>💬 New</Button></Tooltip>
           <Tooltip text="Delete Comment"><Button style={rBtn} onClick={removeCurrentComment}>🗑 Delete</Button></Tooltip>
           <Tooltip text="Show All Comments"><Button style={rBtn} onClick={handleComments}>👁 Show All</Button></Tooltip>
@@ -798,7 +798,7 @@ export function ReviewTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Tracking">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Track Changes" shortcut="Ctrl+Shift+E">
             <Button style={rBtn} active={trackChanges} onClick={toggleTrackChanges}>⊕ Track</Button>
           </Tooltip>
@@ -810,7 +810,7 @@ export function ReviewTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Markup">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Filter All Markup">
             <Select width={108} options={MARKUP_OPTIONS} value={markupMode} onChange={handleFilterMarkup} title="All Markup" />
           </Tooltip>
@@ -820,27 +820,27 @@ export function ReviewTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Compare">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Version History"><Button style={rBtn} onClick={() => openDialog('versionHistory')}>⏱ History</Button></Tooltip>
           <Tooltip text="Compare Documents"><Button style={rBtn} onClick={handleCompare}>⇔ Compare</Button></Tooltip>
         </div>
       </RibbonGroup>
 
       <RibbonGroup label="Protect">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Block Authors"><Button style={rBtn} onClick={blockAuthors}>👥 Protect</Button></Tooltip>
           <Tooltip text="Restrict Editing"><Button style={rBtn} onClick={handleRestrictEditing}>🛡 Restrict</Button></Tooltip>
         </div>
       </RibbonGroup>
 
       <RibbonGroup label="Ink">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Hide Ink"><Button style={rBtn} active={hideInk} onClick={handleHideInk}>🖌 Hide Ink</Button></Tooltip>
         </div>
       </RibbonGroup>
 
       <RibbonGroup label="Smart Features">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Voice Commands & Speech Control">
             <Button
               style={rBtn}
@@ -925,7 +925,7 @@ export function ViewTab() {
         return (
           <>
             <RibbonGroup label="Views">
-              <div style={col}>
+              <div data-col="true" style={col}>
                 <Tooltip text="Print Layout"><Button style={vbtn} active={viewMode === 'print'} onClick={() => applyViewMode('print')}>📄 Print</Button></Tooltip>
                 <Tooltip text="Web Layout"><Button style={vbtn} active={viewMode === 'web'} onClick={() => applyViewMode('web')}>🌐 Web</Button></Tooltip>
                 <Tooltip text="Outline"><Button style={vbtn} active={viewMode === 'outline'} onClick={() => applyViewMode('outline')}>≡ Outline</Button></Tooltip>
@@ -942,7 +942,7 @@ export function ViewTab() {
             </RibbonGroup>
 
             <RibbonGroup label="Show">
-              <div style={col}>
+              <div data-col="true" style={col}>
                 <Tooltip text="Toggle Page Sidebar"><Button style={vbtn} active={sidebarOpen} onClick={toggleSidebar}>⊞ Sidebar</Button></Tooltip>
                 <Tooltip text="Ruler"><Button style={vbtn} active={rulerVisible} onClick={handleRuler}>📏 Ruler</Button></Tooltip>
                 <Tooltip text="Gridlines"><Button style={vbtn} active={gridlinesVisible} onClick={handleGridlines}>⊞ Grid</Button></Tooltip>
@@ -951,7 +951,7 @@ export function ViewTab() {
             </RibbonGroup>
 
             <RibbonGroup label="Zoom">
-              <div style={col}>
+              <div data-col="true" style={col}>
                 <Tooltip text="Zoom Out"><Button style={vbtn} onClick={() => setZoom(zoom - 10)}>−</Button></Tooltip>
                 <span style={{ fontSize: 12, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)', minWidth: 36, textAlign: 'center', height: 26, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{zoom}%</span>
                 <Tooltip text="Zoom In"><Button style={vbtn} onClick={() => setZoom(zoom + 10)}>+</Button></Tooltip>
@@ -963,7 +963,7 @@ export function ViewTab() {
             </RibbonGroup>
 
             <RibbonGroup label="Window">
-              <div style={col}>
+              <div data-col="true" style={col}>
                 <Tooltip text="New Window — opens document in a new tab">
                   <Button style={vbtn} onClick={() => window.open(window.location.href, '_blank')}>⊞ New Window</Button>
                 </Tooltip>
@@ -1007,14 +1007,14 @@ export function ViewTab() {
             </RibbonGroup>
 
             <RibbonGroup label="Structure & Security">
-              <div style={col}>
+              <div data-col="true" style={col}>
                 <Tooltip text="Master Document & Subdocuments"><Button style={vbtn} onClick={() => openDialog('masterDoc')}>📑 Master Doc</Button></Tooltip>
                 <Tooltip text="Security & Protection"><Button style={vbtn} onClick={() => openDialog('security')}>🔒 Security</Button></Tooltip>
               </div>
             </RibbonGroup>
 
             <RibbonGroup label="Macros">
-              <div style={col}>
+              <div data-col="true" style={col}>
                 <Tooltip text="Macros"><Button style={vbtn} onClick={() => {
                   const script = window.prompt('Macro command (upper|lower|title)', 'upper');
                   if (!script || !editor) return;

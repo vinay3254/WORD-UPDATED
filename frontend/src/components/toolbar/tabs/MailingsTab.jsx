@@ -186,14 +186,14 @@ export function MailingsTab() {
   return (
     <>
       <RibbonGroup label="Create">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Envelopes"><Button style={mbtn} onClick={() => openDialog('envelopes')}>✉ Envelopes</Button></Tooltip>
           <Tooltip text="Labels"><Button style={mbtn} onClick={() => openDialog('labels')}>🏷 Labels</Button></Tooltip>
         </div>
       </RibbonGroup>
 
       <RibbonGroup label="Start Mail Merge">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Start Mail Merge"><Button style={mbtn} onClick={startMailMerge}>⊞ Start Merge</Button></Tooltip>
           <Tooltip text="Select Recipients"><Button style={mbtn} onClick={() => openDialog('selectRecipients')}>👥 Recipients</Button></Tooltip>
           <Tooltip text="Edit Recipient List"><Button style={mbtn} onClick={() => openDialog('editRecipients')}>✎ Edit List</Button></Tooltip>
@@ -201,7 +201,7 @@ export function MailingsTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Write & Insert Fields">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Highlight Merge Fields"><Button style={mbtn} onClick={highlightFields}>🖍 Highlight</Button></Tooltip>
           <Tooltip text="Address Block"><Button style={mbtn} onClick={() => insertHtml('<div style="border:1px solid #cfcfcf;padding:10px 12px;">{{FirstName}} {{LastName}}<br />{{Address}}<br />{{City}}, {{State}} {{Zip}}</div>')}>📮 Address</Button></Tooltip>
           <Tooltip text="Greeting Line"><Button style={mbtn} onClick={() => openDialog('greetingLine')}>👋 Greeting</Button></Tooltip>
@@ -213,7 +213,7 @@ export function MailingsTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Preview Results">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Preview Results"><Button style={mbtn} onClick={() => openDialog('finishMerge')}>👁 Preview</Button></Tooltip>
           <Tooltip text="First Record"><Button style={mbtn} onClick={() => navigateRecipient('first')}>|◀</Button></Tooltip>
           <Tooltip text="Previous Record"><Button style={mbtn} onClick={() => navigateRecipient('prev')}>◀</Button></Tooltip>
@@ -225,7 +225,7 @@ export function MailingsTab() {
       </RibbonGroup>
 
       <RibbonGroup label="Finish">
-        <div style={col}>
+        <div data-col="true" style={col}>
           <Tooltip text="Finish & Merge"><Button style={mbtn} onClick={() => openDialog('finishMerge')}>✓ Finish</Button></Tooltip>
           <Tooltip text="Merge to Email"><Button style={mbtn} onClick={mergeToEmail}>📧 Email</Button></Tooltip>
           <Tooltip text="Merge to Printer"><Button style={mbtn} onClick={mergeToPrint}>🖨 Print</Button></Tooltip>
