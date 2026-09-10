@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCollaborationStore, useDocumentStore, useEditorStore, useUIStore } from '@/store';
 import { getStoredUser } from '@/services/api';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { Tooltip } from '@/components/ui';
 
 function getCollaboratorColor(index) {
   const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F'];
@@ -117,10 +118,18 @@ export function TitleBar({ onSave }) {
             transition: 'transform 0.1s ease',
           }} />
         </button>
-        <button type="button" title="Save" aria-label="Save" onClick={onSave} style={quickBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>💾</button>
-        <button type="button" title="Undo" aria-label="Undo" onClick={handleUndo} disabled={!canUndo} style={{ ...quickBtn, ...(canUndo ? null : disabledBtn) }} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>↩</button>
-        <button type="button" title="Redo" aria-label="Redo" onClick={handleRedo} disabled={!canRedo} style={{ ...quickBtn, ...(canRedo ? null : disabledBtn) }} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>↪</button>
-        <button type="button" title="Import DOCX" aria-label="Import DOCX" onClick={() => openDialog('importDocx')} style={quickBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>📥</button>
+        <Tooltip text="Save Document" shortcut="Ctrl+S">
+          <button type="button" aria-label="Save" onClick={onSave} style={quickBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>💾</button>
+        </Tooltip>
+        <Tooltip text="Undo" shortcut="Ctrl+Z">
+          <button type="button" aria-label="Undo" onClick={handleUndo} disabled={!canUndo} style={{ ...quickBtn, ...(canUndo ? null : disabledBtn) }} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>↩</button>
+        </Tooltip>
+        <Tooltip text="Redo" shortcut="Ctrl+Y">
+          <button type="button" aria-label="Redo" onClick={handleRedo} disabled={!canRedo} style={{ ...quickBtn, ...(canRedo ? null : disabledBtn) }} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>↪</button>
+        </Tooltip>
+        <Tooltip text="Open / Import Document" shortcut="Ctrl+O">
+          <button type="button" aria-label="Import DOCX" onClick={() => openDialog('importDocx')} style={quickBtn} onMouseEnter={onGoldHover} onMouseLeave={onGoldLeave}>📥</button>
+        </Tooltip>
       </div>
 
       <div style={{

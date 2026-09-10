@@ -5,7 +5,15 @@
 // ═══════════════════════════════════════════════════════════════
 import React from 'react';
 
-export function RibbonGroup({ label, children, style = {}, className = '', noDivider = false }) {
+export function RibbonGroup({
+  label,
+  children,
+  style = {},
+  contentStyle = {},
+  className = '',
+  noDivider = false,
+  customLayout = false,
+}) {
   return (
     <div
       className={`ribbon-group ${className}`}
@@ -15,29 +23,42 @@ export function RibbonGroup({ label, children, style = {}, className = '', noDiv
         justifyContent: 'space-between',
         alignItems: 'center',
         borderRight: noDivider ? 'none' : '1px solid var(--ribbon-divider)',
-        padding: '2px 8px 3px 8px',
+        padding: '3px 6px 2px 6px',
         margin: 0,
         height: '100%',
         minWidth: 'fit-content',
         flexShrink: 0,
         boxSizing: 'border-box',
         position: 'relative',
+        userSelect: 'none',
         ...style,
       }}
     >
-      {/* Icon + control row */}
+      {/* 3-Row Icon & Control Area */}
       <div
         className="ribbon-group-content"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 4,
-          flex: 1,
-          width: '100%',
-          flexWrap: 'nowrap',
-          paddingTop: 2,
-        }}
+        style={
+          customLayout
+            ? {
+                display: 'flex',
+                alignItems: 'center',
+                height: 84,
+                width: '100%',
+                ...contentStyle,
+              }
+            : {
+                display: 'grid',
+                gridTemplateRows: 'repeat(3, 26px)',
+                gridAutoFlow: 'column',
+                gridAutoColumns: 'max-content',
+                gap: '2px 4px',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: 84,
+                width: '100%',
+                ...contentStyle,
+              }
+        }
       >
         {children}
       </div>
@@ -50,8 +71,10 @@ export function RibbonGroup({ label, children, style = {}, className = '', noDiv
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingTop: 3,
+          paddingTop: 2,
           paddingBottom: 2,
+          height: 16,
+          boxSizing: 'border-box',
         }}
       >
         <span

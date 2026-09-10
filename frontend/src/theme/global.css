@@ -389,6 +389,47 @@ body {
   height: 0 !important;
 }
 
+/* ── 3-Row Ribbon Group Styling ── */
+.ribbon-group-content > * {
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+.ribbon-group-content > * > button,
+.ribbon-group-content > button {
+  height: 24px;
+  padding: 2px 7px;
+  font-size: 11px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.ribbon-group-content [data-hero="true"] {
+  grid-row: 1 / -1 !important;
+  height: 82px !important;
+}
+.ribbon-group-content [data-hero="true"] button,
+.ribbon-group-content [data-hero="true"] > div > button {
+  height: 100% !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 2px !important;
+}
+.ribbon-group-content > [data-stacked="true"] {
+  grid-row: 1 / -1 !important;
+  height: 82px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  align-items: stretch !important;
+}
+.ribbon-group-content > [data-stacked="true"] > * {
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+
 ::selection { background: rgba(212,175,55,0.28); color: inherit; }
 :focus-visible { outline: 1.5px solid var(--gold); outline-offset: 2px; }
 
@@ -653,10 +694,22 @@ body {
   background: rgba(244, 67, 54, 0.1);
 }
 
-.ProseMirror.etherx-show-formatting p::after {
-  content: '¶';
-  color: var(--text-muted);
+.ProseMirror.etherx-show-formatting p::after,
+.ProseMirror.etherx-show-formatting h1::after,
+.ProseMirror.etherx-show-formatting h2::after,
+.ProseMirror.etherx-show-formatting h3::after,
+.ProseMirror.etherx-show-formatting h4::after,
+.ProseMirror.etherx-show-formatting h5::after,
+.ProseMirror.etherx-show-formatting h6::after,
+.ProseMirror.etherx-show-formatting li::after,
+.ProseMirror.etherx-show-formatting blockquote::after {
+  content: ' ¶';
+  color: var(--gold, #c9a84c);
+  opacity: 0.55;
   font-size: 11px;
+  font-family: var(--font-ui, sans-serif);
+  user-select: none;
+  pointer-events: none;
   margin-left: 4px;
 }
 

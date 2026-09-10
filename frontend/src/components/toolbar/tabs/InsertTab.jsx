@@ -1,4 +1,6 @@
 import { useUIStore, useEditorStore, useDocumentStore } from '@/store';
+import { RibbonGroup } from '../RibbonGroup';
+import { Tooltip } from '@/components/ui';
 
 export function InsertTab() {
   const { openDialog, toast, setHeaderFooterTab } = useUIStore();
@@ -140,137 +142,132 @@ export function InsertTab() {
     return <div style={base} />;
   };
 
-  const cmdStyle = {
+  const heroBtn = {
     border: '1px solid transparent',
     background: 'transparent',
     borderRadius: 2,
     cursor: 'pointer',
     color: 'var(--ribbon-ink)',
     width: 54,
-    minHeight: 66,
+    height: 80,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '2px 2px 1px 2px',
+    justifyContent: 'center',
+    gap: 3,
+    padding: '2px 2px',
+    fontFamily: 'var(--font-ui)',
   };
 
-  const label = (t, dd = false) => <span style={{ fontSize: 12, lineHeight: 1.05, textAlign: 'center' }}>{t}{dd ? ' v' : ''}</span>;
+  const itemBtn = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 5,
+    height: 24,
+    padding: '0 6px',
+    border: '1px solid transparent',
+    background: 'transparent',
+    borderRadius: 2,
+    cursor: 'pointer',
+    color: 'var(--ribbon-ink)',
+    fontSize: 11,
+    fontFamily: 'var(--font-ui)',
+    whiteSpace: 'nowrap',
+  };
+
+  const label = (t, dd = false) => <span style={{ fontSize: 11, lineHeight: 1.05, textAlign: 'center' }}>{t}{dd ? ' ▾' : ''}</span>;
 
   return (
     <>
-      <div style={group}>
-        <div style={cmds}>
-          <button style={cmdStyle} onClick={() => run(() => editor.chain().focus().insertPageBreak().run())}>
+      <RibbonGroup label="Pages">
+        <Tooltip text="Page Break" shortcut="Ctrl+Enter">
+          <button data-hero="true" style={heroBtn} onClick={() => run(() => editor.chain().focus().insertPageBreak().run())}>
             {iconBox('page')}
             {label('Page Break')}
           </button>
-        </div>
-        <div style={footer}>Pages</div>
-      </div>
+        </Tooltip>
+      </RibbonGroup>
 
-      <div style={group}>
-        <div style={cmds}>
-          <button style={cmdStyle} onClick={() => openDialog('insertTable')}>
-            {iconBox('table')}
-            {label('Table', true)}
-          </button>
-        </div>
-        <div style={footer}>Tables</div>
-      </div>
+      <RibbonGroup label="Tables">
+        <button data-hero="true" style={heroBtn} onClick={() => openDialog('insertTable')}>
+          {iconBox('table')}
+          {label('Table', true)}
+        </button>
+      </RibbonGroup>
 
-      <div style={group}>
-        <div style={cmds}>
-          <button style={cmdStyle} onClick={() => openDialog('insertImage')}>{iconBox('picture')}{label('Pictures', true)}</button>
-          <button style={cmdStyle} onClick={() => openDialog('insertShape')}>{iconBox('picture')}{label('Shapes', true)}</button>
-          <button style={cmdStyle} onClick={() => openDialog('insertChart')}>{iconBox('chart')}{label('Chart', true)}</button>
-          <button style={cmdStyle} onClick={() => openDialog('screenshot')}>{iconBox('picture')}{label('Screenshot', true)}</button>
-        </div>
-        <div style={footer}>Illustrations</div>
-      </div>
+      <RibbonGroup label="Illustrations">
+        <button style={itemBtn} onClick={() => openDialog('insertImage')}>{iconBox('picture')}{label('Pictures', true)}</button>
+        <button style={itemBtn} onClick={() => openDialog('insertShape')}>{iconBox('picture')}{label('Shapes', true)}</button>
+        <button style={itemBtn} onClick={() => openDialog('insertChart')}>{iconBox('chart')}{label('Chart', true)}</button>
+        <button style={itemBtn} onClick={() => openDialog('screenshot')}>{iconBox('picture')}{label('Screenshot', true)}</button>
+      </RibbonGroup>
 
-      <div style={group}>
-        <div style={cmds}>
-          <button style={cmdStyle} onClick={() => openDialog('insertLink')}>
-            {iconBox('link')}
-            {label('Link')}
-          </button>
-        </div>
-        <div style={footer}>Links</div>
-      </div>
+      <RibbonGroup label="Links">
+        <button data-hero="true" style={heroBtn} onClick={() => openDialog('insertLink')}>
+          {iconBox('link')}
+          {label('Link')}
+        </button>
+      </RibbonGroup>
 
-      <div style={group}>
-        <div style={cmds}>
-          <button style={cmdStyle} onClick={() => openDialog('comments')}>
+      <RibbonGroup label="Comments">
+        <Tooltip text="Comment" shortcut="Ctrl+Alt+M">
+          <button data-hero="true" style={heroBtn} onClick={() => openDialog('comments')}>
             {iconBox('picture')}
             {label('Comment')}
           </button>
-        </div>
-        <div style={footer}>Comments</div>
-      </div>
+        </Tooltip>
+      </RibbonGroup>
 
-      <div style={group}>
-        <div style={cmds}>
-          <button style={cmdStyle} onClick={() => openHeaderFooter('header')}>{iconBox('picture')}{label('Header', true)}</button>
-          <button style={cmdStyle} onClick={() => openHeaderFooter('footer')}>{iconBox('picture')}{label('Footer', true)}</button>
-          <button style={cmdStyle} onClick={() => openHeaderFooter('pagenum')}>{iconBox('picture')}{label('Page Number', true)}</button>
-        </div>
-        <div style={footer}>Header & Footer</div>
-      </div>
+      <RibbonGroup label="Header & Footer">
+        <button style={itemBtn} onClick={() => openHeaderFooter('header')}>{iconBox('picture')}{label('Header', true)}</button>
+        <button style={itemBtn} onClick={() => openHeaderFooter('footer')}>{iconBox('picture')}{label('Footer', true)}</button>
+        <button style={itemBtn} onClick={() => openHeaderFooter('pagenum')}>{iconBox('picture')}{label('Page Number', true)}</button>
+      </RibbonGroup>
 
-      <div style={group}>
-        <div style={cmds}>
-          <button
-            style={cmdStyle}
-            onClick={() => {
-              if (!editor) return;
-              const boxId = `textbox-${Date.now()}`;
-              run(() => {
-                editor
-                  .chain()
-                  .focus()
-                  .insertContent(`<div id="${boxId}" style="border:2px solid #4472c4;border-radius:4px;padding:12px;margin:8px 0;background:#f0f7ff;cursor:text;min-width:200px;min-height:60px;" contenteditable="true" data-textbox="true"><span style="color:#999;font-style:italic;">Click to type</span></div>`)
-                  .run();
-              });
-              toast('Text box inserted', 'success');
-            }}
-          >
-            {iconBox('picture')}{label('Text Box', true)}
-          </button>
-          <button style={cmdStyle} onClick={() => openDialog('buildingBlocks')}>{iconBox('picture')}{label('Quick Parts', true)}</button>
-          <button style={cmdStyle} onClick={insertSignatureField}>{iconBox('picture')}{label('Signature Field')}</button>
-          <button style={cmdStyle} onClick={() => openDialog('wordArt')}>{iconBox('picture')}{label('WordArt', true)}</button>
-          <button style={cmdStyle} onClick={insertDropCap}>{iconBox('picture')}{label('Drop Cap', true)}</button>
-          <button style={cmdStyle} onClick={() => insertHtml(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}>{iconBox('picture')}{label('Date & Time', true)}</button>
-        </div>
-        <div style={footer}>Text</div>
-      </div>
+      <RibbonGroup label="Text">
+        <button
+          style={itemBtn}
+          onClick={() => {
+            if (!editor) return;
+            const boxId = `textbox-${Date.now()}`;
+            run(() => {
+              editor
+                .chain()
+                .focus()
+                .insertContent(`<div id="${boxId}" style="border:2px solid #4472c4;border-radius:4px;padding:12px;margin:8px 0;background:#f0f7ff;cursor:text;min-width:200px;min-height:60px;" contenteditable="true" data-textbox="true"><span style="color:#999;font-style:italic;">Click to type</span></div>`)
+                .run();
+            });
+            toast('Text box inserted', 'success');
+          }}
+        >
+          {iconBox('picture')}{label('Text Box', true)}
+        </button>
+        <button style={itemBtn} onClick={() => openDialog('buildingBlocks')}>{iconBox('picture')}{label('Quick Parts', true)}</button>
+        <button style={itemBtn} onClick={insertSignatureField}>{iconBox('picture')}{label('Signature Field')}</button>
+        <button style={itemBtn} onClick={() => openDialog('wordArt')}>{iconBox('picture')}{label('WordArt', true)}</button>
+        <button style={itemBtn} onClick={insertDropCap}>{iconBox('picture')}{label('Drop Cap', true)}</button>
+        <button style={itemBtn} onClick={() => insertHtml(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}>{iconBox('picture')}{label('Date & Time', true)}</button>
+      </RibbonGroup>
 
-      <div style={group}>
-        <div style={cmds}>
-          <button style={cmdStyle} onClick={() => openDialog('equation')}>{iconBox('picture')}{label('Equation', true)}</button>
-          <button style={cmdStyle} onClick={() => openDialog('insertSymbol')}>{iconBox('picture')}{label('Symbol', true)}</button>
-        </div>
-        <div style={footer}>Symbols</div>
-      </div>
+      <RibbonGroup label="Symbols">
+        <button style={itemBtn} onClick={() => openDialog('equation')}>{iconBox('picture')}{label('Equation', true)}</button>
+        <button style={itemBtn} onClick={() => openDialog('insertSymbol')}>{iconBox('picture')}{label('Symbol', true)}</button>
+      </RibbonGroup>
 
-      <div style={{ ...group, borderRight: 'none' }}>
-        <div style={cmds}>
-          <button style={{ ...cmdStyle, width: 72 }} onClick={() => openDialog('digitalSignature')}>
-            {iconBox('signature')}
-            {label('Digital Sign')}
-          </button>
-          <button style={{ ...cmdStyle, width: 66 }} onClick={insertSignatureField}>
-            {iconBox('picture')}
-            {label('Sig Field')}
-          </button>
-          <button style={{ ...cmdStyle, width: 66 }} onClick={insertEsignFields}>
-            {iconBox('table')}
-            {label('eSign Table')}
-          </button>
-        </div>
-        <div style={footer}>Digital Signatures</div>
-      </div>
+      <RibbonGroup label="Digital Signatures" noDivider>
+        <button style={itemBtn} onClick={() => openDialog('digitalSignature')}>
+          {iconBox('signature')}
+          {label('Digital Sign')}
+        </button>
+        <button style={itemBtn} onClick={insertSignatureField}>
+          {iconBox('picture')}
+          {label('Sig Field')}
+        </button>
+        <button style={itemBtn} onClick={insertEsignFields}>
+          {iconBox('table')}
+          {label('eSign Table')}
+        </button>
+      </RibbonGroup>
     </>
   );
 }

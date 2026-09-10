@@ -751,88 +751,92 @@ export function ReviewTab() {
 
   const handleFilterMarkup = (value) => handleMarkupMode(value);
 
+  const rBtn = { height: 24, fontSize: 11, padding: '0 6px', justifyContent: 'flex-start', whiteSpace: 'nowrap' };
+
   return (
     <>
       <RibbonGroup label="Proofing">
         <Tooltip text="Spelling & Grammar" shortcut="F7">
-          <Button active={spellCheck} onClick={handleSpellCheck}>ABC✓ Spelling</Button>
+          <Button style={rBtn} active={spellCheck} onClick={handleSpellCheck}>ABC✓ Spell</Button>
         </Tooltip>
         <Tooltip text="Readability Dashboard & Clarity Metrics">
-          <Button onClick={() => openDialog('readability')}>📊 Readability</Button>
+          <Button style={rBtn} onClick={() => openDialog('readability')}>📊 Clarity</Button>
         </Tooltip>
-        <Tooltip text="Thesaurus"><Button onClick={openThesaurus}>📖 Thesaurus</Button></Tooltip>
-        <Tooltip text="Word Count"><Button onClick={handleWordCount}>123 Word Count</Button></Tooltip>
-        <Tooltip text="Read Aloud"><Button onClick={handleReadAloud}>🔊 Read Aloud</Button></Tooltip>
-        <Tooltip text="Check Accessibility"><Button onClick={handleAccessibility}>♿ Check Accessibility</Button></Tooltip>
+        <Tooltip text="Thesaurus"><Button style={rBtn} onClick={openThesaurus}>📖 Thesaurus</Button></Tooltip>
+        <Tooltip text="Word Count"><Button style={rBtn} onClick={handleWordCount}>123 Words</Button></Tooltip>
+        <Tooltip text="Read Aloud"><Button style={rBtn} onClick={handleReadAloud}>🔊 Read</Button></Tooltip>
+        <Tooltip text="Check Accessibility"><Button style={rBtn} onClick={handleAccessibility}>♿ Access</Button></Tooltip>
       </RibbonGroup>
 
       <RibbonGroup label="Language">
-        <Tooltip text="Translate"><Button onClick={translateSelection}>🌐 Translate</Button></Tooltip>
-        <Tooltip text="Language"><Button onClick={handleLanguage}>🗣 Language</Button></Tooltip>
+        <Tooltip text="Translate"><Button style={rBtn} onClick={translateSelection}>🌐 Translate</Button></Tooltip>
+        <Tooltip text="Language"><Button style={rBtn} onClick={handleLanguage}>🗣 Language</Button></Tooltip>
       </RibbonGroup>
 
       <RibbonGroup label="Comments">
-        <Tooltip text="New Comment"><Button onMouseDown={(e) => e.preventDefault()} onClick={handleNewComment}>💬 New</Button></Tooltip>
-        <Tooltip text="Delete Comment"><Button onClick={removeCurrentComment}>🗑 Delete</Button></Tooltip>
-        <Tooltip text="Previous Comment"><Button onClick={() => stepComment(-1)}>◀ Prev</Button></Tooltip>
-        <Tooltip text="Next Comment"><Button onClick={() => stepComment(1)}>▶ Next</Button></Tooltip>
-        <Tooltip text="Show All Comments"><Button onClick={handleComments}>👁 Show All</Button></Tooltip>
+        <Tooltip text="New Comment" shortcut="Ctrl+Alt+M"><Button style={rBtn} onMouseDown={(e) => e.preventDefault()} onClick={handleNewComment}>💬 New</Button></Tooltip>
+        <Tooltip text="Delete Comment"><Button style={rBtn} onClick={removeCurrentComment}>🗑 Delete</Button></Tooltip>
+        <Tooltip text="Show All Comments"><Button style={rBtn} onClick={handleComments}>👁 Show All</Button></Tooltip>
+        <Tooltip text="Previous Comment"><Button style={rBtn} onClick={() => stepComment(-1)}>◀ Prev</Button></Tooltip>
+        <Tooltip text="Next Comment"><Button style={rBtn} onClick={() => stepComment(1)}>▶ Next</Button></Tooltip>
       </RibbonGroup>
 
       <RibbonGroup label="Tracking">
-        <Tooltip text="Track Changes — highlights insertions/deletions in the document">
-          <Button active={trackChanges} onClick={toggleTrackChanges}>⊕ Track</Button>
+        <Tooltip text="Track Changes" shortcut="Ctrl+Shift+E">
+          <Button style={rBtn} active={trackChanges} onClick={toggleTrackChanges}>⊕ Track</Button>
         </Tooltip>
-        <Tooltip text="Accept Change"><Button onClick={handleAcceptChange}>✓ Accept</Button></Tooltip>
-        <Tooltip text="Reject Change"><Button onClick={handleRejectChange}>✕ Reject</Button></Tooltip>
-        <Tooltip text="Previous Change"><Button onClick={() => announceChange(-1)}>◀ Prev</Button></Tooltip>
-        <Tooltip text="Next Change"><Button onClick={() => announceChange(1)}>▶ Next</Button></Tooltip>
+        <Tooltip text="Accept Change"><Button style={rBtn} onClick={handleAcceptChange}>✓ Accept</Button></Tooltip>
+        <Tooltip text="Reject Change"><Button style={rBtn} onClick={handleRejectChange}>✕ Reject</Button></Tooltip>
+        <Tooltip text="Previous Change"><Button style={rBtn} onClick={() => announceChange(-1)}>◀ Prev</Button></Tooltip>
+        <Tooltip text="Next Change"><Button style={rBtn} onClick={() => announceChange(1)}>▶ Next</Button></Tooltip>
       </RibbonGroup>
 
       <RibbonGroup label="Markup">
         <Tooltip text="Filter All Markup">
-          <Select width={122} options={MARKUP_OPTIONS} value={markupMode} onChange={handleFilterMarkup} title="All Markup" />
+          <Select width={108} options={MARKUP_OPTIONS} value={markupMode} onChange={handleFilterMarkup} title="All Markup" />
         </Tooltip>
-        <Tooltip text="Show Markup"><Button onClick={handleReviewingPane}>☰ Show Markup</Button></Tooltip>
-        <Tooltip text="Reviewing Pane"><Button onClick={handleReviewingPane}>▣ Pane</Button></Tooltip>
+        <Tooltip text="Show Markup"><Button style={rBtn} onClick={handleReviewingPane}>☰ Markup</Button></Tooltip>
+        <Tooltip text="Reviewing Pane"><Button style={rBtn} onClick={handleReviewingPane}>▣ Pane</Button></Tooltip>
       </RibbonGroup>
 
       <RibbonGroup label="Compare">
-        <Tooltip text="Version History"><Button onClick={() => openDialog('versionHistory')}>⏱ History</Button></Tooltip>
-        <Tooltip text="Compare Documents"><Button onClick={handleCompare}>⇔ Compare</Button></Tooltip>
+        <Tooltip text="Version History"><Button style={rBtn} onClick={() => openDialog('versionHistory')}>⏱ History</Button></Tooltip>
+        <Tooltip text="Compare Documents"><Button style={rBtn} onClick={handleCompare}>⇔ Compare</Button></Tooltip>
       </RibbonGroup>
 
       <RibbonGroup label="Protect">
-        <Tooltip text="Block Authors"><Button onClick={blockAuthors}>👥 Block Authors</Button></Tooltip>
-        <Tooltip text="Restrict Editing"><Button onClick={handleRestrictEditing}>🛡 Restrict</Button></Tooltip>
+        <Tooltip text="Block Authors"><Button style={rBtn} onClick={blockAuthors}>👥 Protect</Button></Tooltip>
+        <Tooltip text="Restrict Editing"><Button style={rBtn} onClick={handleRestrictEditing}>🛡 Restrict</Button></Tooltip>
       </RibbonGroup>
 
       <RibbonGroup label="Ink">
-        <Tooltip text="Hide Ink"><Button active={hideInk} onClick={handleHideInk}>🖌 Hide Ink</Button></Tooltip>
+        <Tooltip text="Hide Ink"><Button style={rBtn} active={hideInk} onClick={handleHideInk}>🖌 Hide Ink</Button></Tooltip>
       </RibbonGroup>
 
       <RibbonGroup label="Smart Features">
         <Tooltip text="Voice Commands & Speech Control">
           <Button
+            style={rBtn}
             active={voiceActive && voiceMode === 'command'}
             onClick={() => startVoice('command')}
           >
-            {voiceActive && voiceMode === 'command' ? '🔴 Stop Voice' : '🎙 Voice Commands'}
+            {voiceActive && voiceMode === 'command' ? '🔴 Stop' : '🎙 Voice'}
           </Button>
         </Tooltip>
         <Tooltip text="Voice Typing (Dictation + Commands)">
           <Button
+            style={rBtn}
             active={voiceActive && voiceMode === 'typing'}
             onClick={() => startVoice('typing')}
           >
-            {voiceActive && voiceMode === 'typing' ? '🔴 Stop Typing' : '🎤 Voice Typing'}
+            {voiceActive && voiceMode === 'typing' ? '🔴 Stop' : '🎤 Dictate'}
           </Button>
         </Tooltip>
-        <Tooltip text="Text-to-Speech"><Button onClick={() => runReadAloud({ editor, toast })}>🔊 TTS</Button></Tooltip>
-        <Tooltip text="Stop Reading"><Button onClick={() => { if (window.speechSynthesis) { window.speechSynthesis.cancel(); toast('Read aloud stopped', 'info'); } }}>🔇 Stop TTS</Button></Tooltip>
-        <Tooltip text="OCR (Image to Text)"><Button onClick={() => runImageTextCapture({ editor, toast, mode: 'ocr' })}>🧾 OCR</Button></Tooltip>
-        <Tooltip text="Handwriting Recognition"><Button onClick={() => runImageTextCapture({ editor, toast, mode: 'handwriting' })}>✍ Handwriting</Button></Tooltip>
-        <Tooltip text="Smart Suggestions"><Button onClick={() => runSmartSuggestions({ editor, toast })}>✨ Suggestions</Button></Tooltip>
+        <Tooltip text="Text-to-Speech"><Button style={rBtn} onClick={() => runReadAloud({ editor, toast })}>🔊 Read</Button></Tooltip>
+        <Tooltip text="Stop Reading"><Button style={rBtn} onClick={() => { if (window.speechSynthesis) { window.speechSynthesis.cancel(); toast('Read aloud stopped', 'info'); } }}>🔇 Stop</Button></Tooltip>
+        <Tooltip text="OCR (Image to Text)"><Button style={rBtn} onClick={() => runImageTextCapture({ editor, toast, mode: 'ocr' })}>🧾 OCR</Button></Tooltip>
+        <Tooltip text="Handwriting Recognition"><Button style={rBtn} onClick={() => runImageTextCapture({ editor, toast, mode: 'handwriting' })}>✍ Ink</Button></Tooltip>
+        <Tooltip text="Smart Suggestions"><Button style={rBtn} onClick={() => runSmartSuggestions({ editor, toast })}>✨ Suggest</Button></Tooltip>
       </RibbonGroup>
     </>
   );

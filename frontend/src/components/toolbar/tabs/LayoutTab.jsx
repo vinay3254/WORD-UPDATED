@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDocumentStore, useEditorStore, useUIStore } from '@/store';
 import { PAGE_SIZES, MARGIN_MAP, getLayoutMetrics } from '@/utils/pageLayout';
+import { RibbonGroup } from '../RibbonGroup';
 
 const INDENT_CM = [0, 0.5, 1, 1.5, 2, 2.5, 3];
 const SPACING_PT = [0, 3, 6, 8, 10, 12, 18, 24, 30];
@@ -33,12 +34,11 @@ function selectedImageElement() {
   return document.querySelector('.ProseMirror img.ProseMirror-selectednode') || document.querySelector('.ProseMirror .ProseMirror-selectednode img');
 }
 
-function Group({ title, children, width }) {
+function Group({ title, children }) {
   return (
-    <div style={{ ...styles.group, maxWidth: width, minWidth: 0 }}>
-      <div style={styles.groupBody}>{children}</div>
-      <div style={styles.groupTitle}>{title}</div>
-    </div>
+    <RibbonGroup label={title}>
+      {children}
+    </RibbonGroup>
   );
 }
 
@@ -51,13 +51,37 @@ function IconTextButton({ icon, text, onClick, active, disabled }) {
       }}
       onClick={onClick}
       style={{
-        ...styles.iconTextBtn,
-        ...(active ? styles.iconTextBtnActive : null),
-        ...(disabled ? styles.iconTextBtnDisabled : null),
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        height: 24,
+        padding: '0 7px',
+        fontSize: 11,
+        fontFamily: 'var(--font-ui)',
+        border: active ? '1px solid var(--border-gold)' : '1px solid transparent',
+        borderRadius: 2,
+        background: active ? 'var(--bg-hover)' : 'transparent',
+        color: active ? 'var(--text-gold)' : 'var(--text-primary)',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.45 : 1,
+        whiteSpace: 'nowrap',
+        transition: 'background 0.1s, border-color 0.1s',
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled && !active) {
+          e.currentTarget.style.background = 'var(--bg-hover)';
+          e.currentTarget.style.borderColor = 'var(--border)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled && !active) {
+          e.currentTarget.style.background = 'transparent';
+          e.currentTarget.style.borderColor = 'transparent';
+        }
       }}
     >
-      <div style={styles.icon}>{icon}</div>
-      <div style={styles.label}>{text}</div>
+      <span style={{ fontSize: 13, lineHeight: 1 }}>{icon}</span>
+      <span style={{ fontSize: 11 }}>{text}</span>
     </button>
   );
 }
@@ -70,18 +94,71 @@ function TinyAction({ text, onClick, disabled }) {
       }}
       onClick={onClick}
       disabled={disabled}
-      style={{ ...styles.tinyAction, ...(disabled ? styles.iconTextBtnDisabled : null) }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: 24,
+        padding: '0 6px',
+        fontSize: 11,
+        fontFamily: 'var(--font-ui)',
+        border: '1px solid var(--border)',
+        borderRadius: 2,
+        background: 'var(--bg-elevated)',
+        color: 'var(--text-secondary)',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.45 : 1,
+        whiteSpace: 'nowrap',
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.background = 'var(--bg-hover)';
+          e.currentTarget.style.borderColor = 'var(--border-gold)';
+          e.currentTarget.style.color = 'var(--gold)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.background = 'var(--bg-elevated)';
+          e.currentTarget.style.borderColor = 'var(--border)';
+          e.currentTarget.style.color = 'var(--text-secondary)';
+        }
+      }}
     >
       {text}
     </button>
   );
 }
 
-function OptionPicker({ label, value, options, onChange, width = 122 }) {
+function OptionPicker({ label, value, options, onChange, width = 84, icon }) {
   return (
-    <div style={styles.optionPickerWrap}>
-      <span style={styles.optionPickerLabel}>{label}</span>
-      <select value={value} onChange={(e) => onChange(e.target.value)} style={{ ...styles.optionPickerSelect, width }}>
+    <div style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 4,
+      height: 24,
+      fontSize: 11,
+      fontFamily: 'var(--font-ui)',
+      whiteSpace: 'nowrap',
+    }}>
+      {icon && <span style={{ fontSize: 13, lineHeight: 1 }}>{icon}</span>}
+      <span style={{ fontSize: 11, color: 'var(--text-secondary)', minWidth: 42 }}>{label}:</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          height: 22,
+          padding: '0 4px',
+          fontSize: 11,
+          fontFamily: 'var(--font-ui)',
+          background: 'var(--bg-elevated)',
+          color: 'var(--text-primary)',
+          border: '1px solid var(--border)',
+          borderRadius: 2,
+          width,
+          cursor: 'pointer',
+          outline: 'none',
+        }}
+      >
         {options.map((opt) => (
           <option key={`${label}-${opt.value || 'blank'}`} value={opt.value}>{opt.label}</option>
         ))}
@@ -316,7 +393,7 @@ export function LayoutTab() {
 
   return (
     <>
-      <Group title="Page Setup" width={430}>
+      <Group title="Page Setup">
         <OptionPicker
           label="Margins"
           value={pageMargin}
@@ -330,12 +407,21 @@ export function LayoutTab() {
             setPageMargin(next);
             toast(`Margins: ${next}`, 'success');
           }}
-          width={98}
+          width={84}
         />
-        <IconTextButton icon="▯" text="Orientation" onClick={() => {
-          const next = pageOrientation === 'portrait' ? 'landscape' : 'portrait';
-          setPageOrientation(next);
-        }} active={pageOrientation === 'landscape'} />
+        <OptionPicker
+          label="Orientation"
+          value={pageOrientation}
+          options={[
+            { value: 'portrait', label: 'Portrait' },
+            { value: 'landscape', label: 'Landscape' },
+          ]}
+          onChange={(next) => {
+            setPageOrientation(next);
+            toast(`Orientation: ${next}`, 'success');
+          }}
+          width={84}
+        />
         <OptionPicker
           label="Size"
           value={pageSize}
@@ -349,7 +435,7 @@ export function LayoutTab() {
             setPageSize(next);
             toast(`Size: ${(PAGE_SIZES[next] || PAGE_SIZES.a4).label}`, 'success');
           }}
-          width={92}
+          width={84}
         />
         <OptionPicker
           label="Columns"
@@ -364,24 +450,23 @@ export function LayoutTab() {
             setPageColumns(c);
             toast(`Columns: ${c}`, 'success');
           }}
-          width={96}
+          width={80}
         />
         <OptionPicker
           label="Breaks"
           value={breakAction}
           options={BREAK_OPTIONS}
           onChange={insertSelectedBreak}
-          width={178}
+          width={84}
         />
         <TinyAction text="Line Numbers ▼" onClick={toggleLineNumbers} />
         <TinyAction text="Hyphenation ▼" onClick={toggleHyphenation} />
       </Group>
 
-      <Group title="Paragraph" width={360}>
-        <div style={styles.metricCol}>
-          <div style={styles.metricLabel}>Indent</div>
-          <div style={styles.metricRow}>
-            <span style={styles.metricText}>Left:</span>
+      <Group title="Paragraph">
+        <div data-stacked="true" style={{ display: 'flex', flexDirection: 'column', gap: 2, height: 78, justifyContent: 'space-between' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 24, fontSize: 11, whiteSpace: 'nowrap' }}>
+            <span style={{ color: 'var(--text-muted)', minWidth: 42 }}>Indent L:</span>
             <select value={String(indentLeftCm)} onChange={(e) => {
               const n = Number(e.target.value);
               setIndentLeftCm(n);
@@ -389,23 +474,7 @@ export function LayoutTab() {
             }} style={styles.metricSelect}>
               {INDENT_CM.map((v) => <option key={`left-${v}`} value={String(v)}>{v} cm</option>)}
             </select>
-          </div>
-          <div style={styles.metricRow}>
-            <span style={styles.metricText}>Right:</span>
-            <select value={String(indentRightCm)} onChange={(e) => {
-              const n = Number(e.target.value);
-              setIndentRightCm(n);
-              applyParagraphLayout({ indentRightCm: n });
-            }} style={styles.metricSelect}>
-              {INDENT_CM.map((v) => <option key={`right-${v}`} value={String(v)}>{v} cm</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div style={styles.metricCol}>
-          <div style={styles.metricLabel}>Spacing</div>
-          <div style={styles.metricRow}>
-            <span style={styles.metricText}>Before:</span>
+            <span style={{ color: 'var(--text-muted)', minWidth: 46, marginLeft: 4 }}>Space B:</span>
             <select value={String(spacingBeforePt)} onChange={(e) => {
               const n = Number(e.target.value);
               setSpacingBeforePt(n);
@@ -414,8 +483,16 @@ export function LayoutTab() {
               {SPACING_PT.map((v) => <option key={`before-${v}`} value={String(v)}>{v} pt</option>)}
             </select>
           </div>
-          <div style={styles.metricRow}>
-            <span style={styles.metricText}>After:</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 24, fontSize: 11, whiteSpace: 'nowrap' }}>
+            <span style={{ color: 'var(--text-muted)', minWidth: 42 }}>Indent R:</span>
+            <select value={String(indentRightCm)} onChange={(e) => {
+              const n = Number(e.target.value);
+              setIndentRightCm(n);
+              applyParagraphLayout({ indentRightCm: n });
+            }} style={styles.metricSelect}>
+              {INDENT_CM.map((v) => <option key={`right-${v}`} value={String(v)}>{v} cm</option>)}
+            </select>
+            <span style={{ color: 'var(--text-muted)', minWidth: 46, marginLeft: 4 }}>Space A:</span>
             <select value={String(spacingAfterPt)} onChange={(e) => {
               const n = Number(e.target.value);
               setSpacingAfterPt(n);
@@ -427,21 +504,21 @@ export function LayoutTab() {
         </div>
       </Group>
 
-      <Group title="Arrange" width={470}>
+      <Group title="Arrange">
         <IconTextButton icon="▧" text="Position" onClick={() => alignImage('center')} />
         <IconTextButton icon="≋" text="Wrap Text" onClick={wrapText} />
-        <IconTextButton icon="＋" text="Size Up" onClick={() => resizeSelectedImage('up')} />
-        <IconTextButton icon="－" text="Size Down" onClick={() => resizeSelectedImage('down')} />
-        <IconTextButton icon="🗑" text="Remove" onClick={removeSelectedImage} />
+        <IconTextButton icon="⌖" text="Selection Pane" onClick={toggleSidebar} active={sidebarOpen} />
         <IconTextButton icon="▰" text="Bring Forward" onClick={() => layerImage('up')} />
         <IconTextButton icon="▱" text="Send Backward" onClick={() => layerImage('down')} />
-        <IconTextButton icon="⌖" text="Selection Pane" onClick={toggleSidebar} active={sidebarOpen} />
+        <TinyAction text="Rotate ▼" onClick={rotateImage} />
         <TinyAction text="Align ▼" onClick={() => alignImage('left')} />
         <TinyAction text="Group ▼" onClick={() => toast('Grouping is limited in this editor', 'info')} />
-        <TinyAction text="Rotate ▼" onClick={rotateImage} />
+        <IconTextButton icon="🗑" text="Remove" onClick={removeSelectedImage} />
+        <IconTextButton icon="＋" text="Size Up" onClick={() => resizeSelectedImage('up')} />
+        <IconTextButton icon="－" text="Size Down" onClick={() => resizeSelectedImage('down')} />
       </Group>
 
-      <Group title="Structure & Security" width={210}>
+      <Group title="Structure & Security">
         <IconTextButton icon="📑" text="Master Doc" onClick={() => openDialog('masterDoc')} />
         <IconTextButton icon="🔒" text="Security" onClick={() => openDialog('security')} />
       </Group>

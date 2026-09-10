@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
+
 import { useUIStore, useEditorStore } from '@/store';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -43,11 +44,8 @@ export function Ribbon() {
 
   const ribbonContainerRef = useRef(null);
   const ribbonContentRef = useRef(null);
-  const ribbonMeasureContentRef = useRef(null);
   const overflowBtnRef = useRef(null);
-  const overflowWrapperRef = useRef(null);
   const overflowMeasureRef = useRef(null);
-  const tabWidthsCache = useRef({});
   const popoverRef = useRef(null);
 
   const [visibleCount, setVisibleCount] = useState(null);
@@ -114,14 +112,11 @@ export function Ribbon() {
   // When activeTab changes, close overflow and prepare for measurement
   useEffect(() => {
     setOverflowOpen(false);
-    if (!tabWidthsCache.current[activeTab]) {
-      setVisibleCount(null);
-    } else {
-      computeVisible();
-    }
-  }, [activeTab, computeVisible]);
+    // Always recompute based on actual rendered widths
+    setVisibleCount(null);
+  }, [activeTab]);
 
-  // Measure children when visibleCount is reset to null
+  // After visibleCount reset, recompute
   useLayoutEffect(() => {
     if (visibleCount === null) {
       computeVisible();
@@ -304,7 +299,7 @@ export function Ribbon() {
           position: 'relative',
           background: 'var(--ribbon-surface)',
           borderBottom: '1px solid var(--border)',
-          minHeight: 92,
+          minHeight: 110,
           display: 'flex',
           alignItems: 'stretch',
           padding: '2px 8px 0',
@@ -342,6 +337,46 @@ export function Ribbon() {
           <Content />
         </div>
 
+        {/* Hidden overflow sizer so measurement is accurate even before overflow button renders */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            opacity: 0,
+            pointerEvents: 'none',
+            height: 0,
+            overflow: 'visible',
+          }}
+        >
+          <button
+            ref={overflowMeasureRef}
+            aria-label="More ribbon options"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              height: 84,
+              padding: '0 10px',
+              borderRadius: 4,
+              border: '1px solid var(--border)',
+              background: 'var(--bg-elevated)',
+              color: 'var(--text-primary)',
+              fontSize: 12,
+              fontFamily: 'var(--font-ui)',
+              fontWeight: 600,
+              cursor: 'pointer',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <span style={{ letterSpacing: '1px' }}>•••</span>
+            <span>More</span>
+            <span style={{ fontSize: 9 }}>▾</span>
+          </button>
+        </div>
+
         {/* "··· More" trigger button when content overflows container */}
         {visibleCount !== null && totalCount > visibleCount && (
           <div
@@ -361,7 +396,7 @@ export function Ribbon() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 5,
-                height: 72,
+                height: 84,
                 padding: '0 10px',
                 borderRadius: 4,
                 border: overflowOpen ? '1px solid var(--gold)' : '1px solid var(--border)',
@@ -414,7 +449,7 @@ export function Ribbon() {
               maxWidth: 'calc(100vw - 32px)',
               overflowX: 'auto',
               scrollbarWidth: 'none',
-              height: 90,
+              height: 110,
               boxSizing: 'border-box',
               display: 'flex',
               alignItems: 'stretch',
